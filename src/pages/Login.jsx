@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import students from "../data/StudentData";
 
 const Login = () => {
   const [data, setData] = useState({
     email: "",
     password: "",
-    role: "user", // default role
+    role: "student", // default role
   });
+  const navigate = useNavigate();
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
@@ -19,7 +21,37 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // login logic here
+    // Simple demo login: check the demo `students` data for a matching email/password
+    if (data.role === "student") {
+      const student = students.find(
+        (s) => s.email.toLowerCase() === data.email.toLowerCase() && s.password === data.password
+      );
+
+      if (student) {
+        // store minimal info about logged-in user
+        localStorage.setItem(
+          "currentUser",
+          JSON.stringify({ role: "student", studentId: student.profile.studentId, email: student.email })
+        );
+        navigate("/student");
+        return;
+      }
+
+      alert("Invalid student credentials");
+      return;
+    }
+
+    // For non-student roles, just navigate to their dashboard (demo only)
+    if (data.role === "teacher") {
+      navigate("/teacher");
+      return;
+    }
+
+    if (data.role === "advisor") {
+      // No demo advisor route; fallback to teacher
+      navigate("/teacher");
+      return;
+    }
   };
 
   return (
