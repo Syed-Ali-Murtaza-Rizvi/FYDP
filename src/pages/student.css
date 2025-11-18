@@ -1,0 +1,150 @@
+/* Whole Page Background */
+body {
+  background-color: #e7d4d4;
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* Wrapper */
+.dashboard-wrapper {
+  width: 92%;
+  margin: auto;
+  padding: 20px 0;
+}
+.heading{
+   background-color: #7b0000;     /* maroon */
+  color: white;
+  padding: 14px 25px;
+  font-size: 18px;
+  font-weight: 500;
+  border-radius: 12px;
+  margin-top: 15px;              
+  margin-bottom: 25px; 
+  display: flex;
+  justify-content: space-between;
+}
+.heading button{
+    background-color: #ddd;
+    color: black;
+    padding: 1px;
+    border-radius: 10px;
+    width: 100px;
+    
+}
+
+
+/* GRID LAYOUT (IMPORTANT FIX) */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 330px 1fr;
+  gap: 35px;
+}
+
+/* Profile Card FIXED */
+.profile-card {
+  background: white;
+  border-radius: 18px;
+  padding: 25px;
+  border: 2px solid #d3c4c4;
+  text-align: center;
+  height: fit-content;
+}
+
+/* Avatar Fix */
+.profile-avatar {
+  font-size: 80px;
+  color: #5a2568;
+  margin-bottom: 15px;
+}
+
+/* Right content container */
+.right-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Extra spacing to match screenshot */
+}
+
+/* Generic Card */
+.card {
+  background: white;
+  border-radius: 18px;
+  padding: 30px;
+  border: 2px solid #cce2cc; /* Light green border like screenshot */
+}
+
+
+ .card-title {
+  background: #a3042d;
+  color: white;
+  padding: 12px 20px;
+  font-size: 16px;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  font-weight: 600;
+} 
+
+/* Content inside card */
+.card-content {
+  padding: 20px 25px;
+}
+
+/* Table Container */
+.course-table {
+  width: 100%;
+  overflow-x: auto; /* makes it responsive on small screens */
+}
+
+/* Table */
+.course-table table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  table-layout: auto;   /* ensures columns adjust naturally */
+}
+
+/* Cells */
+.course-table th, 
+.course-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #ddd;
+  font-size: 15px;
+  text-align: left;
+  white-space: nowrap; /* prevents breaking of text such as course names */
+}
+
+/* Header row */
+.course-table th {
+  font-weight: 600;
+  background-color: #f7f7f7;
+}
+
+/* Even row striping for cleaner look */
+.course-table tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+/* Hover effect */
+.course-table tr:hover {
+  background-color: #f0f0f0;
+}
+/* Footer
+.footer {
+  text-align: center;
+  margin-top: 60px;
+  padding: 20px;
+  font-size: 14px;
+  color: #444;
+} */
+
+.performance-box{
+    display: flex;
+    justify-content: space-between;
+}
+
+
+body, html {
+    margin: 0;
+    padding: 0;
+}
+
+
