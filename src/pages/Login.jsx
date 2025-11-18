@@ -56,19 +56,19 @@ const Login = () => {
 
   return (
     <div className="flex justify-center items-center min-h-[80vh] p-4">
-      <div className="max-w-md w-full mx-auto border border-gray-300 rounded-2xl p-8">
+      <div className="max-w-md w-full mx-auto border border-gray-300 rounded-2xl p-8" style={{backgroundColor: 'white'}}>
         <div className="text-red-900 text-center mb-6 text-4xl">
           <p className="font-semibold">Login</p>
-          <div className="w-50 mx-auto mt-8 mb-5 border-b-2 border-gray-300"></div>
+          <div className="w-50 mx-auto mt-3 mb-5 border-b-2 border-gray-300"></div>
         </div>
         <form onSubmit={handleSubmit}>
 
-          <div>
-            <label className="text-gray-800 text-sm mb-2 block">
+          <div >
+            <label className="text-red-800 text-sm mb-2 block">
               <strong>Email</strong>
             </label>
             <input
-              className="text-gray-800 bg-white border border-gray-300 w-full text-sm px-4 py-3 rounded-md focus:outline-none focus:ring-1 focus:ring-red-900 focus:border-red-900"
+              className="text-800 bg-white border border-gray-300 w-full text-sm px-4 py-3 rounded-md focus:outline-none focus:ring-1 focus:ring-red-900 focus:border-red-900"
               type="email"
               value={data.email}
               placeholder="Enter Email"
@@ -79,7 +79,7 @@ const Login = () => {
           </div>
 
           <div>
-            <label className="text-gray-800 text-sm mb-2 block pt-3">
+            <label className="text-red-800 text-sm mb-2 block pt-3">
               <strong>Password</strong>
             </label>
 
@@ -97,7 +97,7 @@ const Login = () => {
 
 
           <div className="mb-2 mt-3">
-            <label className="text-gray-800 text-sm mb-2 block">
+            <label className="text-red-800 text-sm mb-2 block">
               <strong>Login as</strong>
             </label>
             <select
