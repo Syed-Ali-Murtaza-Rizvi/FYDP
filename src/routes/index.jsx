@@ -1,21 +1,31 @@
-import {createBrowserRouter} from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { createBrowserRouter, Navigate } from 'react-router-dom'
 import App from "../App"
 import Login from "../pages/Login"
-import Signup from '../pages/Signup'
+import StudentDashboard from '../pages/StudentDashboard'
+import TeacherDashboard from '../pages/TeacherDashboard'
 
+const RootRedirect = () => {
+    useEffect(() => {
+        try {
+            localStorage.clear();
+        } catch (e) {}
+    }, []);
 
-const router=createBrowserRouter([
+    return <Navigate to="/login" replace />;
+}
+
+const router = createBrowserRouter([
     {
         path: '/',
         element: <App/>,
-        children:[
-            {
-                path:"login",
-                element:<Login/>
-            }
+        children: [
+            { index: true, element: <RootRedirect /> },
+            { path: "login", element: <Login/> },
+            { path: "student", element: <StudentDashboard/> },
+            { path: "teacher", element: <TeacherDashboard/> }
         ]
     },
-    
 ])
 
 export default router
