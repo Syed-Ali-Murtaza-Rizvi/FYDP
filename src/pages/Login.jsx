@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import students from "../data/StudentData";
+import teacherData from "../data/TeacherData";
 
 const Login = () => {
   const [data, setData] = useState({
@@ -19,40 +20,69 @@ const Login = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    // Simple demo login: check the demo `students` data for a matching email/password
-    if (data.role === "student") {
-      const student = students.find(
-        (s) => s.email.toLowerCase() === data.email.toLowerCase() && s.password === data.password
+  const handleSubmit = (e) => {
+  e.preventDefault();
+
+  /* --------------------------
+     STUDENT LOGIN
+  -------------------------- */
+  if (data.role === "student") {
+    const student = students.find(
+      (s) =>
+        s.email.toLowerCase() === data.email.toLowerCase() &&
+        s.password === data.password
+    );
+
+    if (student) {
+      localStorage.setItem(
+        "currentUser",
+        JSON.stringify({
+          role: "student",
+          studentId: student.profile.studentId,
+          email: student.email,
+        })
       );
-
-      if (student) {
-        // store minimal info about logged-in user
-        localStorage.setItem(
-          "currentUser",
-          JSON.stringify({ role: "student", studentId: student.profile.studentId, email: student.email })
-        );
-        navigate("/student");
-        return;
-      }
-
-      alert("Invalid student credentials");
+      navigate("/student");
       return;
     }
 
-    // For non-student roles, just navigate to their dashboard (demo only)
-    if (data.role === "teacher") {
+    alert("Invalid student credentials");
+    return;
+  }
+
+  /* --------------------------
+     TEACHER LOGIN
+  -------------------------- */
+  if (data.role === "teacher") {
+    // teacherData is NOT an array → access directly
+    if (
+      teacherData.profile.email.toLowerCase() === data.email.toLowerCase() &&
+      teacherData.profile.password === data.password
+    ) {
+      localStorage.setItem(
+        "currentUser",
+        JSON.stringify({
+          role: "teacher",
+          teacherId: teacherData.profile.teacherId,
+          email: teacherData.profile.email,
+        })
+      );
       navigate("/teacher");
       return;
     }
 
-    if (data.role === "advisor") {
-      // No demo advisor route; fallback to teacher
-      navigate("/teacher");
-      return;
-    }
-  };
+    alert("Invalid teacher credentials");
+    return;
+  }
+
+  /* --------------------------
+     ADVISOR LOGIN (optional)
+  -------------------------- */
+  if (data.role === "advisor") {
+    alert("Advisor module not created. Redirecting to teacher dashboard.");
+    navigate("/teacher");
+  }
+};
 
   return (
     <div className="flex justify-center items-center min-h-[80vh] p-4">

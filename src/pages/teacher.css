@@ -1,0 +1,235 @@
+/* MAIN WRAPPER LAYOUT */
+.teacher-wrapper {
+  display: grid;
+  grid-template-columns: 330px 1fr;
+  gap: 40px;
+  width: 92%;
+  margin: 20px auto;
+  font-family: Arial, sans-serif;
+}
+
+.profile-card {
+  background: white;
+  border: 2px solid #cfc9c9;
+  border-radius: 18px;
+  padding: 30px 20px;
+  text-align: center;
+  height: fit-content;
+}
+
+.profile-avatar {
+  font-size: 90px;
+  color: #737373;
+  margin-bottom: 10px;
+}
+
+.profile-card h3 {
+  font-size: 20px;
+  margin-top: 5px;
+}
+
+.profile-card p {
+  margin: 4px 0;
+  font-size: 15px;
+}
+
+.teach-list {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #ddd;
+}
+
+
+/* --------------------------
+   RIGHT SECTION
+--------------------------- */
+.right-section {
+  display: flex;
+  flex-direction: column;
+  gap: 35px;
+}
+
+
+/* --------------------------
+   WELCOME BANNER
+--------------------------- */
+.welcome-banner {
+  background-color: #7b0000;
+  color: white;
+  padding: 14px 25px;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+
+/* --------------------------
+   CARD CONTAINER
+--------------------------- */
+.card {
+  background: white;
+  border-radius: 18px;
+  border: 2px solid #cde7cd;
+  padding-bottom: 20px;
+}
+
+.card-title {
+  background: #a3032d;
+  color: white;
+  padding: 14px 20px;
+  border-radius: 16px 16px 0 0;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.card-content {
+  padding: 25px 30px;
+}
+
+
+/* --------------------------
+   FORM INPUTS
+--------------------------- */
+.card-content label {
+  display: block;
+  margin-top: 12px;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.card-content select,
+.card-content input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 4px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+
+/* --------------------------
+   BUTTONS
+--------------------------- */
+.start-btn,
+.stop-btn,
+.new-btn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 20px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+}
+
+.start-btn {
+  background: #5b0000;
+  color: white;
+}
+
+.start-btn:hover {
+  background: #8b0000;
+}
+
+.stop-btn {
+  background: #8b0000;
+  color: white;
+  width: 180px;
+  margin-left: auto;
+  margin-right: 20px;
+}
+
+.stop-btn:hover {
+  background: #a00000;
+}
+
+.new-btn {
+  background: #600000;
+  color: white;
+  width: 200px;
+  margin: 25px auto 0;
+}
+
+.new-btn:hover {
+  background: #900000;
+}
+
+
+/* --------------------------
+   ACTIVE ATTENDANCE BOX
+--------------------------- */
+.active-card {
+  padding-bottom: 40px;
+}
+
+.active-box {
+  background: #fff7d9;
+  border: 2px solid #e7d796;
+  padding: 20px;
+  margin: 20px;
+  border-radius: 10px;
+}
+
+
+/* --------------------------
+   SUCCESS BOX (COMPLETED)
+--------------------------- */
+.success-box {
+  background: #e4f8e4;
+  border: 2px solid #a7e0a7;
+  padding: 20px;
+  margin: 20px;
+  border-radius: 10px;
+}
+
+
+/* --------------------------
+   FINAL ATTENDANCE LIST
+--------------------------- */
+.final-list {
+  padding: 10px 25px;
+}
+
+.scroll-area {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-top: 10px;
+  padding-right: 8px;
+}
+
+.student-row {
+  background: white;
+  padding: 12px 15px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+/* TAG COLORS */
+.tag {
+  padding: 3px 8px;
+  font-size: 12px;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.tag.RFID {
+  background: #d0e5ff;
+  color: #0052b8;
+}
+
+.tag.CV {
+  background: #d4ffe2;
+  color: #008f32;
+}
+
+.time {
+  font-size: 12px;
+  color: #666;
+}
