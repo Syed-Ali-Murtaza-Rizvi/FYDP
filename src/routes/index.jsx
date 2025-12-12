@@ -4,6 +4,8 @@ import App from "../App"
 import Login from "../pages/Login"
 import StudentDashboard from '../pages/StudentDashboard'
 import TeacherDashboard from '../pages/TeacherDashboard'
+import AdminDashboard from '../pages/AdminDashboard'
+import EventAdminDashboard from '../pages/EventAdminDashboard'
 
 const RootRedirect = () => {
     useEffect(() => {
@@ -23,7 +25,9 @@ const router = createBrowserRouter([
             { index: true, element: <RootRedirect /> },
             { path: "login", element: <Login/> },
             { path: "student", element: <StudentDashboard/> },
-            { path: "teacher", element: <TeacherDashboard/> }
+            { path: "teacher", element: <TeacherDashboard/> },
+            { path:"admin",element: <AdminDashboard/>},
+            {path:"eventadmin",element:<EventAdminDashboard/>},
         ]
     },
 ])
