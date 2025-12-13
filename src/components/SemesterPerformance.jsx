@@ -1,6 +1,14 @@
 import React from "react";
 
 const SemesterPerformance=({overall})=>{
+  if (!overall) {
+    return (
+      <div className="performance-card">
+        <p className="label">Overall Attendance</p>
+        <h2>Not Available</h2>
+      </div>
+    );
+  }
     return(
         <div className="performance-card">
     

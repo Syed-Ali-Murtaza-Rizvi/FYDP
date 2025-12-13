@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import students from "../data/StudentData";
+const students = JSON.parse(localStorage.getItem("students")) || [];
+
 import teacherData from "../data/TeacherData";
 
 const Login = () => {
@@ -23,57 +24,56 @@ const Login = () => {
   const handleSubmit = (e) => {
   e.preventDefault();
 
-  /* --------------------------
-     STUDENT LOGIN
-  -------------------------- */
-  if (data.role === "student") {
-    const student = students.find(
-      (s) =>
-        s.email.toLowerCase() === data.email.toLowerCase() &&
-        s.password === data.password
-    );
+const student = students.find(
+  s =>
+    s.id === data.email || // allow roll number
+    (s.email === data.email && s.password === data.password)
+);
 
-    if (student) {
-      localStorage.setItem(
-        "currentUser",
-        JSON.stringify({
-          role: "student",
-          studentId: student.profile.studentId,
-          email: student.email,
-        })
-      );
-      navigate("/student");
-      return;
-    }
+if (student && student.password === data.password) {
+ localStorage.setItem(
+  "currentUser",
+  JSON.stringify({
+    role: "student",
+    id: student.id,
+    name: student.name,
+    email: student.email
+  })
+);
 
-    alert("Invalid student credentials");
-    return;
-  }
+  navigate("/student");
+} else {
+  alert("Invalid student credentials");
+}
+
 
   /* --------------------------
      TEACHER LOGIN
   -------------------------- */
-  if (data.role === "teacher") {
-    // teacherData is NOT an array → access directly
-    if (
-      teacherData.profile.email.toLowerCase() === data.email.toLowerCase() &&
-      teacherData.profile.password === data.password
-    ) {
-      localStorage.setItem(
-        "currentUser",
-        JSON.stringify({
-          role: "teacher",
-          teacherId: teacherData.profile.teacherId,
-          email: teacherData.profile.email,
-        })
-      );
-      navigate("/teacher");
-      return;
-    }
+ const teachers =
+  JSON.parse(localStorage.getItem("teachers")) || [];
 
-    alert("Invalid teacher credentials");
-    return;
-  }
+const teacher = teachers.find(
+  t => t.id === data.email && t.password === data.password
+);
+
+if (teacher) {
+  localStorage.setItem(
+    "currentUser",
+    JSON.stringify({
+      role: "teacher",
+      id: teacher.id,
+      name: teacher.name,
+      email: teacher.email
+    })
+  );
+
+  navigate("/teacher");
+  return;
+}
+
+alert("Invalid Teacher credentials");
+
 
   /* --------------------------
      ADVISOR LOGIN (optional)
