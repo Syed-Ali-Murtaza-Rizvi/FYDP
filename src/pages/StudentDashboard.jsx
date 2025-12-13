@@ -12,6 +12,7 @@ const StudentDashboard = () => {
   const [scannerOpen, setScannerOpen] = useState(false);
   const [attendanceJSON, setAttendanceJSON] = useState(null);
   const html5QrCodeRef = useRef(null);
+  const alertShownRef = useRef(false);
 
   const currentUserStr = localStorage.getItem("currentUser");
   let profile = null, overallAttendance = null, courses = [];
@@ -20,7 +21,9 @@ const StudentDashboard = () => {
       const currentUser = JSON.parse(currentUserStr);
       if (currentUser && currentUser.role === "student") {
         const student = students.find(
-          (s) => s.profile.studentId === currentUser.studentId || s.email === currentUser.email
+          (s) =>
+            s.profile.studentId === currentUser.studentId ||
+            s.email === currentUser.email
         );
         if (student) {
           profile = student.profile;
@@ -47,70 +50,110 @@ const StudentDashboard = () => {
       html5QrCodeRef.current = null;
     }
     setScannerOpen(false);
+    alertShownRef.current = false;
   };
 
   const startScanner = () => setScannerOpen(true);
 
-  // Wait for the QR div to exist before starting scanner
+  const isWithinGeofence = (userLat, userLng, qrLat, qrLng, radius, accuracy) => {
+    const toRad = (x) => (x * Math.PI) / 180;
+    const R = 6371000; // meters
+    const dLat = toRad(qrLat - userLat);
+    const dLng = toRad(qrLng - userLng);
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(toRad(userLat)) *
+        Math.cos(toRad(qrLat)) *
+        Math.sin(dLng / 2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c;
+
+    const practicalRadius = Math.max(radius, 50); // minimum 50m for classroom
+    return distance <= practicalRadius + accuracy; // include GPS accuracy
+  };
+
   useEffect(() => {
-    if (scannerOpen) {
-      const qrRegionId = "qr-reader";
-      const startQr = async () => {
-        // Ensure div exists
-        const qrDiv = document.getElementById(qrRegionId);
-        if (!qrDiv) return;
+    if (!scannerOpen) return;
 
-        html5QrCodeRef.current = new Html5Qrcode(qrRegionId);
+    const qrRegionId = "qr-reader";
+    const startQr = async () => {
+      const qrDiv = document.getElementById(qrRegionId);
+      if (!qrDiv) return;
 
-        try {
-          const devices = await Html5Qrcode.getCameras();
-          if (devices && devices.length) {
-            await html5QrCodeRef.current.start(
-              { facingMode: "environment" },
-              { fps: 10, qrbox: { width: 250, height: 250 } },
-              (decodedText) => {
-                try {
-                  const qrData = JSON.parse(decodedText);
-                  navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                      const attendanceData = {
-                        studentRollNo: profile.studentId,
-                        course: qrData.course,
-                        slot: qrData.slot,
-                        date: qrData.date,
-                        scannedAt: new Date().toISOString(),
-                        geoLocation: {
-                          latitude: position.coords.latitude,
-                          longitude: position.coords.longitude,
-                          accuracy: position.coords.accuracy,
-                        },
-                      };
-                      setAttendanceJSON(attendanceData);
-                      stopScanner();
-                    },
-                    () => {
-                      alert("Geolocation permission denied.");
-                      stopScanner();
-                    }
-                  );
-                } catch {
-                  alert("Invalid QR code format.");
-                  stopScanner();
-                }
-              }
-            );
-          } else {
-            alert("No camera devices found.");
-            stopScanner();
-          }
-        } catch (err) {
-          console.error(err);
-          alert("Camera access failed.");
+      html5QrCodeRef.current = new Html5Qrcode(qrRegionId);
+
+      try {
+        const devices = await Html5Qrcode.getCameras();
+        if (!devices || devices.length === 0) {
+          alert("No camera devices found.");
           stopScanner();
+          return;
         }
-      };
-      startQr();
-    }
+
+        await html5QrCodeRef.current.start(
+          { facingMode: "environment" }, // back camera
+          { fps: 10, qrbox: { width: 250, height: 250 } },
+          (decodedText) => {
+            if (alertShownRef.current) return;
+            alertShownRef.current = true;
+
+            stopScanner().then(() => {
+              try {
+                const qrData = JSON.parse(decodedText);
+
+                if (
+                  !qrData.geoLocation ||
+                  qrData.geoLocation.lat === undefined ||
+                  qrData.geoLocation.lng === undefined ||
+                  qrData.geoLocation.radius === undefined
+                ) {
+                  alert("QR missing geolocation data.");
+                  return;
+                }
+
+                const { lat: qrLat, lng: qrLng, radius } = qrData.geoLocation;
+
+                navigator.geolocation.getCurrentPosition(
+                  (position) => {
+                    const { latitude, longitude, accuracy } = position.coords;
+
+                    if (!isWithinGeofence(latitude, longitude, qrLat, qrLng, radius, accuracy)) {
+                      alert("You are outside the allowed location for this scan.");
+                      return;
+                    }
+
+                    const attendanceData = {
+                      studentName: profile.name,
+                      studentRollNo: profile.studentId,
+                      course: qrData.course,
+                      slot: qrData.slot,
+                      date: qrData.date,
+                      scannedAt: new Date().toISOString(),
+                      geoLocation: {
+                        latitude,
+                        longitude,
+                        accuracy,
+                      },
+                    };
+
+                    setAttendanceJSON(attendanceData);
+                  },
+                  () => alert("Geolocation permission denied.")
+                );
+              } catch {
+                alert("Invalid QR code format.");
+              }
+            });
+          }
+        );
+      } catch (err) {
+        console.error(err);
+        alert("Camera access failed.");
+        stopScanner();
+      }
+    };
+
+    startQr();
   }, [scannerOpen, profile]);
 
   useEffect(() => {
@@ -125,7 +168,9 @@ const StudentDashboard = () => {
           <div className="heading">
             <h1>Welcome back, {profile?.name || "Student"}!</h1>
             <div className="heading-buttons">
-              <button onClick={startScanner} className="mark-attendance-btn">Mark Attendance</button>
+              <button onClick={startScanner} className="mark-attendance-btn">
+                Mark Attendance
+              </button>
               <button onClick={handleLogout}>Logout</button>
             </div>
           </div>
