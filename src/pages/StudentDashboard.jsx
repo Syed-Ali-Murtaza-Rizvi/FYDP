@@ -121,7 +121,18 @@ const StudentDashboard = () => {
                       alert("You are outside the allowed location for this scan.");
                       return;
                     }
-
+                    if(profile.year !== qrData.batch){
+                       alert("invalid batch for this Scan");
+                      return;
+                    }
+                    if(profile.department !== qrData.program){
+                       alert("invalid program for this Scan");
+                      return;
+                    }
+                    if(courses.findIndex(c => c.code === qrData.course) === -1){
+                       alert("You are not enrolled in the course for this scan.");
+                      return;
+                    }
                     const attendanceData = {
                       studentName: profile.name,
                       studentRollNo: profile.studentId,
@@ -159,7 +170,7 @@ const StudentDashboard = () => {
   useEffect(() => {
     return () => stopScanner();
   }, []);
-
+console.log("Profile data:", profile);  
   return (
     <div className="dashboard-wrapper">
       <div className="dashboard-grid">

@@ -5,7 +5,7 @@ const students = [
     profile: {
       name: "John Smith",
       studentId: "2023001",
-      year: "2nd Year",
+      year: "2023",
       section: "A",
       department: "Computer Science"
     },
@@ -28,7 +28,7 @@ const students = [
     profile: {
       name: "Aisha Khan",
       studentId: "2023002",
-      year: "2nd Year",
+      year: "2024",
       section: "B",
       department: "Computer Science"
     },
@@ -50,9 +50,9 @@ const students = [
     profile: {
       name: "Imran Ali",
       studentId: "2023003",
-      year: "1st Year",
+      year: "2022",
       section: "A",
-      department: "Electrical Engineering"
+      department: "BSCS"
     },
     email: "imran.ali@example.com",
     password: "imran_pw",
@@ -62,7 +62,9 @@ const students = [
     },
     courses: [
       { code: "EE101", name: "Circuit Analysis", attendance: 80, present: 32, total: 40 },
-      { code: "MATH101", name: "Calculus I", attendance: 72, present: 29, total: 40 }
+      { code: "MATH101", name: "Calculus I", attendance: 72, present: 29, total: 40 },
+      { code: "CS301", name: "Database Management Systems", attendance: 72, present: 29, total: 40 }
+    
     ]
   }
 ];
