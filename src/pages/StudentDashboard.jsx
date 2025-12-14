@@ -68,7 +68,7 @@ const StudentDashboard = () => {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = R * c;
 
-    const practicalRadius = Math.max(radius, 50); // minimum 50m for classroom
+    const practicalRadius = Math.max(radius, 20000); // minimum 20km for classroom
     return distance <= practicalRadius + accuracy; // include GPS accuracy
   };
 

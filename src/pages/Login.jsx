@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import teacherData from "../data/TeacherData";
 
-const students = JSON.parse(localStorage.getItem("students")) || [];
 
 const Login = () => {
   const [data, setData] = useState({
@@ -10,7 +9,7 @@ const Login = () => {
     password: "",
     role: "student",
   });
-
+  
   const navigate = useNavigate();
 
   const handleOnChange = (e) => {
@@ -23,8 +22,9 @@ const Login = () => {
 
     /* --------------------------
        STUDENT LOGIN
-    -------------------------- */
-    if (data.role === "student") {
+       -------------------------- */
+  if (data.role === "student") {
+      const students = JSON.parse(localStorage.getItem("students")) || [];
       const student = students.find(
         (s) =>
           s.id === data.email ||
@@ -54,27 +54,54 @@ const Login = () => {
     -------------------------- */
 
     // Ensure teachers is ALWAYS an array
-    const teachers = Array.isArray(teacherData)
-      ? teacherData
-      : teacherData.teachers || [];
+    /* --------------------------
+   TEACHER LOGIN (CORRECT)
+-------------------------- */
+if (data.role === "teacher") {
+  console.log("Teacher data:", teacherData);
 
-    const teacher = teachers.find(
-      (t) => t.email === data.email && t.password === data.password
+  // ✅ Authenticate from teacherData (SOURCE OF TRUTH)
+  const teacher = teacherData.find(
+    (t) =>
+      t.profile.email === data.email &&
+      t.profile.password === data.password
+  );
+
+  console.log("Matched teacher:", teacher);
+
+  if (teacher) {
+    // ✅ Save current user
+    localStorage.setItem(
+      "currentUser",
+      JSON.stringify({
+        role: "teacher",
+        id: teacher.profile.teacherId,
+        name: teacher.profile.name,
+        email: teacher.profile.email,
+      })
     );
 
-    if (teacher) {
-      localStorage.setItem(
-        "currentUser",
-        JSON.stringify({
-          role: "teacher",
-          id: teacher.id,
-          name: teacher.name,
-          email: teacher.email,
-        })
-      );
-      navigate("/teacher");
-      return;
-    }
+    // ✅ Save teachers in format expected by TeacherDashboard
+    localStorage.setItem(
+      "teachers",
+      JSON.stringify([
+        {
+          id: teacher.profile.teacherId,
+          name: teacher.profile.name,
+          dept: teacher.profile.department,
+          courses: teacher.profile.coursesTeaching.join(","),
+        },
+      ])
+    );
+
+    navigate("/teacher");
+    return;
+  }
+
+  alert("Invalid teacher credentials");
+  return;
+}
+
 
     /* --------------------------
        ADVISOR LOGIN

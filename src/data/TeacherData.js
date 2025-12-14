@@ -1,4 +1,5 @@
-const teacherData = {
+const teacherData = [
+{
   profile: {
     name: "Dr. Anjali Verma",
     teacherId: "T2021042",
@@ -26,6 +27,7 @@ const teacherData = {
     { name: "Amit Kumar", roll: "2023003", mode: "CV", time: "02:47:54 AM" },
     { name: "Sneha Reddy", roll: "2023004", mode: "RFID", time: "02:47:55 AM" }
   ]
-};
+},
+];
 
 export default teacherData;
