@@ -65,19 +65,37 @@ const ManageStudents = ({ years, programs, students = [], onRegister }) => {
             onChange={handleChange}
           />
 
-          <select name="year" value={form.year} onChange={handleChange}>
+          <select
+            name="year"
+            value={form.year}
+            onChange={handleChange}
+          >
             <option value="">Select year</option>
-            {years.map(y => <option key={y}>{y}</option>)}
+            {years.map((y) => (
+              <option key={y}>{y}</option>
+            ))}
           </select>
 
-          <select name="batch" value={form.batch} onChange={handleChange}>
+          <select
+            name="batch"
+            value={form.batch}
+            onChange={handleChange}
+          >
             <option value="">Select batch</option>
-            {years.map(y => <option key={y}>{y}</option>)}
+            {years.map((y) => (
+              <option key={y}>{y}</option>
+            ))}
           </select>
 
-          <select name="program" value={form.program} onChange={handleChange}>
+          <select
+            name="program"
+            value={form.program}
+            onChange={handleChange}
+          >
             <option value="">Select program</option>
-            {programs.map(p => <option key={p}>{p}</option>)}
+            {programs.map((p) => (
+              <option key={p}>{p}</option>
+            ))}
           </select>
 
           <input
@@ -96,6 +114,7 @@ const ManageStudents = ({ years, programs, students = [], onRegister }) => {
         </div>
 
         <br />
+
         <button className="primary" onClick={handleSubmit}>
           Register Student
         </button>
@@ -108,15 +127,21 @@ const ManageStudents = ({ years, programs, students = [], onRegister }) => {
         <div className="filters-inline">
           <select>
             <option>Year</option>
-            {years.map(y => <option key={y}>{y}</option>)}
+            {years.map((y) => (
+              <option key={y}>{y}</option>
+            ))}
           </select>
 
           <select>
             <option>Program</option>
-            {programs.map(p => <option key={p}>{p}</option>)}
+            {programs.map((p) => (
+              <option key={p}>{p}</option>
+            ))}
           </select>
 
-          <button className="primary-outline">View Students</button>
+          <button className="primary-outline">
+            View Students
+          </button>
         </div>
 
         <div className="placeholder">
