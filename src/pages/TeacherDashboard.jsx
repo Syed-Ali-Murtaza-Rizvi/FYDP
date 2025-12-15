@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import teacherData from "../data/TeacherData";
 import "./teacher.css";
+import { addAttendanceRequest } from "../data/AttendenceRequest";
 import QRGenerator from "../components/GenerateQRCode";
 
-const TeacherDashboard = () => {
+const TeacherDashboard = ({}) => {
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
   const teachers = teacherData;
 
@@ -18,6 +19,7 @@ const TeacherDashboard = () => {
   if (!teacher) {
     return <h2>Teacher not found</h2>;
   }
+ 
 
   // Safe data extraction
   const teacherProfile = teacher.profile || {};
@@ -44,6 +46,16 @@ const TeacherDashboard = () => {
   const [selectedSlots, setSelectedSlots] = useState("");
   const [geoLocation, setGeoLocation] = useState({ lat: null, lng: null });
   const [showUpdateModal, setShowUpdateModal] = useState(false);
+  // 🔹 UPDATE ATTENDANCE REQUEST FORM STATE
+
+  const [requestForm, setRequestForm] = useState({
+  batch: "",
+  program: "",
+  course: "",
+  type: "",
+  slots: "",
+  reason: ""
+});
 
   // Get geolocation when QR is active
   useEffect(() => {
@@ -76,6 +88,36 @@ const TeacherDashboard = () => {
     setGeoLocation({ lat: null, lng: null });
   };
 
+const submitAttendanceRequest = () => {
+  const newRequest = {
+    id: Date.now(),
+    teacherId: profile.teacherId,
+    teacherName: profile.name,
+    department: profile.department,
+    batch: requestForm.batch,
+    program: requestForm.program,
+    course: requestForm.course,
+    attendanceType: requestForm.type,
+    slots: requestForm.slots,
+    reason: requestForm.reason,
+    status: "Pending",
+    createdAt: new Date().toISOString(),
+  };
+
+  console.log("👩‍🏫 Teacher sending request:", newRequest);
+
+  addAttendanceRequest(newRequest); // ✅ SAVE TO LOCAL STORAGE
+
+  alert("Attendance update request sent to admin ✅");
+  setShowUpdateModal(false);
+};
+
+
+
+
+
+
+
   return (
     <div className="teacher-wrapper">
       {/* PROFILE CARD */}
@@ -103,51 +145,126 @@ const TeacherDashboard = () => {
           Welcome back, {profile.name}!
         </div>
 
-        {/* UPDATE MODAL */}
-        {showUpdateModal && (
-          <div className="modal-overlay">
-            <div className="modal-box">
-              <div className="modal-header">
-                <h3>Update Attendance Request</h3>
-                <span className="close-btn" onClick={() => setShowUpdateModal(false)}>✖</span>
-              </div>
-              <div className="modal-content">
-                <label>Batch</label>
-                <select>
-                  <option>Select batch</option>
-                  {batches.map(b => <option key={b}>{b}</option>)}
-                </select>
+       {/* UPDATE MODAL */}
+{showUpdateModal && (
+  <div className="modal-overlay">
+    <div className="modal-box">
 
-                <label>Program</label>
-                <select>
-                  <option>Select program</option>
-                  {programs.map(p => <option key={p}>{p}</option>)}
-                </select>
+      <div className="modal-header">
+        <h3>Update Attendance Request</h3>
+        <span
+          className="close-btn"
+          onClick={() => setShowUpdateModal(false)}
+        >
+          ✖
+        </span>
+      </div>
 
-                <label>Course Name</label>
-                <select>
-                  <option>Select course</option>
-                  {courses.map(c => (
-                    <option key={c.code}>{c.code} – {c.name}</option>
-                  ))}
-                </select>
+      <div className="modal-content">
 
-                <label>Attendance Type</label>
-                <select>
-                  <option>Select type</option>
-                  {attendanceTypes.map(a => <option key={a}>{a}</option>)}
-                </select>
+        {/* Batch */}
+        <label>Batch</label>
+        <select
+          value={requestForm.batch}
+          onChange={(e) =>
+            setRequestForm({ ...requestForm, batch: e.target.value })
+          }
+        >
+          <option value="">Select batch</option>
+          {batches.map(b => (
+            <option key={b} value={b}>{b}</option>
+          ))}
+        </select>
 
-                <label>Number of Slots</label>
-                <input type="number" placeholder="Enter number of slots" />
-              </div>
-              <div className="modal-actions">
-                <button className="cancel-btn" onClick={() => setShowUpdateModal(false)}>Cancel</button>
-                <button className="submit-btn">Submit</button>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Program */}
+        <label>Program</label>
+        <select
+          value={requestForm.program}
+          onChange={(e) =>
+            setRequestForm({ ...requestForm, program: e.target.value })
+          }
+        >
+          <option value="">Select program</option>
+          {programs.map(p => (
+            <option key={p} value={p}>{p}</option>
+          ))}
+        </select>
+
+        {/* Course */}
+        <label>Course Name</label>
+        <select
+          value={requestForm.course}
+          onChange={(e) =>
+            setRequestForm({ ...requestForm, course: e.target.value })
+          }
+        >
+          <option value="">Select course</option>
+          {courses.map(c => (
+            <option key={c.code} value={c.code}>
+              {c.code} – {c.name}
+            </option>
+          ))}
+        </select>
+
+        {/* Attendance Type */}
+        <label>Attendance Type</label>
+        <select
+          value={requestForm.type}
+          onChange={(e) =>
+            setRequestForm({ ...requestForm, type: e.target.value })
+          }
+        >
+          <option value="">Select type</option>
+          {attendanceTypes.map(a => (
+            <option key={a} value={a}>{a}</option>
+          ))}
+        </select>
+
+        {/* Slots */}
+        <label>Number of Slots</label>
+        <input
+          type="number"
+          placeholder="Enter number of slots"
+          value={requestForm.slots}
+          onChange={(e) =>
+            setRequestForm({ ...requestForm, slots: e.target.value })
+          }
+        />
+
+        {/* Reason */}
+        <label>Reason</label>
+        <input
+          type="text"
+          placeholder="Reason for update"
+          value={requestForm.reason}
+          onChange={(e) =>
+            setRequestForm({ ...requestForm, reason: e.target.value })
+          }
+        />
+
+      </div>
+
+      <div className="modal-actions">
+        <button
+          className="cancel-btn"
+          onClick={() => setShowUpdateModal(false)}
+        >
+          Cancel
+        </button>
+
+        <button
+          className="submit-btn"
+          onClick={submitAttendanceRequest}
+        >
+
+          Submit
+        </button>
+      </div>
+
+    </div>
+  </div>
+)}
+
 
         {/* FORM STATE */}
         {state === "form" && (

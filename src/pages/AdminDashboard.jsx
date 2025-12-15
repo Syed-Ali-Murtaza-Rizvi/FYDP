@@ -1,19 +1,27 @@
 // src/pages/AdminDashboard.jsx
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import adminData from "../data/AdminData";
 import AdminHeader from "../components/admin/AdminHeader";
 import AttendanceRequests from "../components/admin/AttendenceRequest";
 import ManageStudents from "../components/admin/ManageStudents";
 import ManageTeachers from "../components/admin/ManageTeacher";
 import ViewAttendance from "../components/admin/ViewAttendence";
-
 import "../styles/admin.css";
-
+import { getAttendanceRequests } from "../data/AttendenceRequest";
 const AdminDashboard = () => {
   const [tab, setTab] = useState("requests"); // default to Attendance Requests
   const [data, setData] = useState(adminData);
+//state declaartion
 
- 
+const [requests, setRequests] = useState([]);
+
+useEffect(() => {
+  const data = getAttendanceRequests();
+  console.log("🧑‍💼 Admin loaded requests:", data);
+  setRequests(data);
+}, [tab]);
+
+
 const handleRegisterStudent = (student) => {
   const stored = JSON.parse(localStorage.getItem("students")) || [];
 
@@ -72,13 +80,15 @@ const handleRegisterTeacher = (teacher) => {
     `Teacher registered!\n\nLogin Details:\nID: ${newTeacher.id}\nPassword: ${newTeacher.password}`
   );
 };
+ 
 return (
     <div className="admin-page">
       <AdminHeader tab={tab} setTab={setTab} />
 
-      {tab === "requests" && <AttendanceRequests requests={data.attendanceRequests} />}
-
-      {tab === "students" && (
+ {tab === "requests" && (
+  <AttendanceRequests requests={requests} />
+)}
+  {tab === "students" && (
         <ManageStudents
           students={data.students}
           years={data.years}
