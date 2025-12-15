@@ -183,6 +183,7 @@ input, select, textarea {
   font-size:14px;
 }
 
+
 /* small card blocks inside content */
 .card-inner {
   background:#faf7f7;
@@ -297,4 +298,41 @@ color: #650000;
 border: 2px solid #650000;
 padding: 10px;
 border-radius: 29px;
+}
+/*-----------filtered resukt---------------*/
+.simple-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+.simple-table .modify{
+  display: flex;
+  justify-content: space-between;
+
+}
+.simple-table .modify #up{
+  background-color: #650000;
+  border-radius: 10px;
+  width: 100px;
+}
+.simple-table .modify #del{
+ border: 2px black solid;
+  border-radius: 10px;
+  width: 100px;
+  height: 38px;
+}
+
+.simple-table th,
+.simple-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+}
+
+.simple-table th {
+  background-color: #7a0000;
+  color: white;
+}
+
+.simple-table tr:nth-child(even) {
+  background-color: #f9f9f9;
 }

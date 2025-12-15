@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-
+import { useEffect } from "react";
+import "../../styles/admin.css";
 const ManageStudents = ({ years, programs, students = [], onRegister }) => {
   const [form, setForm] = useState({
     name: "",
@@ -10,6 +11,25 @@ const ManageStudents = ({ years, programs, students = [], onRegister }) => {
     email: "",
     phone: ""
   });
+  const [filterYear, setFilterYear] = useState("");
+const [filterProgram, setFilterProgram] = useState("");
+const [filteredStudents, setFilteredStudents] = useState([]);
+
+useEffect(() => {
+  setFilteredStudents([]);
+}, [filterYear, filterProgram]);
+    // 🔹 get students from localStorage
+  const localStudents =
+    JSON.parse(localStorage.getItem("students")) || [];
+
+  // 🔹 merge JSON students + localStorage students
+  const allStudents = [
+    ...students,
+    ...localStudents.filter(
+      ls => !students.some(js => js.id === ls.id)
+    )
+  ];
+
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -43,7 +63,8 @@ const ManageStudents = ({ years, programs, students = [], onRegister }) => {
       {/* HEADER */}
       <div className="section-title">
         🧑‍🎓 Manage Students
-        <span className="badge">{students.length} Total Students</span>
+        <span className="badge">{allStudents.length} Total Students</span>
+
       </div>
 
       {/* REGISTER STUDENT */}
@@ -125,28 +146,81 @@ const ManageStudents = ({ years, programs, students = [], onRegister }) => {
         <h4>View Students by Year and Program</h4>
 
         <div className="filters-inline">
-          <select>
-            <option>Year</option>
-            {years.map((y) => (
-              <option key={y}>{y}</option>
-            ))}
-          </select>
+  <select
+    value={filterYear}
+    onChange={(e) => setFilterYear(e.target.value)}
+  >
+    <option value="">Select Year</option>
+    {years.map(y => (
+      <option key={y} value={y}>{y}</option>
+    ))}
+  </select>
 
-          <select>
-            <option>Program</option>
-            {programs.map((p) => (
-              <option key={p}>{p}</option>
-            ))}
-          </select>
+  <select
+    value={filterProgram}
+    onChange={(e) => setFilterProgram(e.target.value)}
+  >
+    <option value="">Select Program</option>
+    {programs.map(p => (
+      <option key={p} value={p}>{p}</option>
+    ))}
+  </select>
 
-          <button className="primary-outline">
-            View Students
-          </button>
-        </div>
+  <button
+    className="primary-outline"
+    onClick={() => {
+      if (!filterYear || !filterProgram) {
+        alert("Please select both Year and Program");
+        return;
+      }
 
-        <div className="placeholder">
-          Select Year and Program to view students
-        </div>
+      const result = allStudents.filter(
+        s =>
+          s.year === filterYear &&
+          s.program === filterProgram
+      );
+
+      setFilteredStudents(result);
+    }}
+  >
+    View Students
+  </button>
+</div>
+
+
+       <div className="placeholder">
+  {filteredStudents.length === 0 ? (
+    <p>No students found for selected filters.</p>
+  ) : (
+    <table className="simple-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Roll No</th>
+          <th>Year</th>
+          <th>Program</th>
+          <th>Email</th>
+          <th>Buttons</th>
+        </tr>
+      </thead>
+      <tbody>
+        {filteredStudents.map((s, index) => (
+          <tr key={index}>
+            <td>{s.name}</td>
+            <td>{s.id}</td>
+            <td>{s.year}</td>
+            <td>{s.program}</td>
+            <td>{s.email || "-"}</td>
+            
+            <td><div class="modify"><button id="up">update</button>
+            <button id="del">del</button></div></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )}
+</div>
+
       </div>
 
     </div>
