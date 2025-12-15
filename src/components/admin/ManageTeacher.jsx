@@ -1,25 +1,36 @@
 import React, { useState } from "react";
 import "../../styles/admin.css";
 
-const ManageTeachers = ({
-  teachers = [],
-  years = [],
-  programs = [],
-  departments = [],
-  onRegister
-}) => {
+const ManageTeachers = ({ programs = [], years = [] }) => {
+  /* ======================
+     ADMIN CONTEXT
+  ====================== */
+  const admin = JSON.parse(localStorage.getItem("currentUser")) || {};
+
+  // ✅ Only programs admin controls
+  const adminPrograms =
+    Array.isArray(admin.programs) && admin.programs.length
+      ? admin.programs
+      : programs;
 
   /* ======================
-     REGISTER FORM STATE
+     LOCAL STORAGE
+  ====================== */
+  const getTeachers = () =>
+    JSON.parse(localStorage.getItem("teachers")) || [];
+
+  const [teachers, setTeachers] = useState(getTeachers());
+
+  /* ======================
+     REGISTER FORM
   ====================== */
   const [form, setForm] = useState({
     id: "",
     name: "",
     email: "",
     phone: "",
-    year: "",
-    program: "",
-    dept: "",
+    years: "",
+    programs: "",
     courses: ""
   });
 
@@ -31,58 +42,123 @@ const ManageTeachers = ({
   const [filteredTeachers, setFilteredTeachers] = useState([]);
 
   /* ======================
-     MERGE JSON + LOCAL
+     UPDATE MODAL
   ====================== */
-  const localTeachers =
-    JSON.parse(localStorage.getItem("teachers")) || [];
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [updateForm, setUpdateForm] = useState({
+    id: "",
+    courses: ""
+  });
 
-  const allTeachers = [
-    ...teachers,
-    ...localTeachers.filter(
-      lt => !teachers.some(jt => jt.id === lt.id)
-    )
-  ];
+  /* ======================
+     HELPERS
+  ====================== */
+  const parseCommaList = (value) =>
+    value.split(",").map(v => v.trim()).filter(Boolean);
+
+  const parseCourses = (value) =>
+    value.split(",").map(c => {
+      const [code, name] = c.split(":").map(s => s.trim());
+      return { code, name };
+    });
 
   /* ======================
      HANDLERS
   ====================== */
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
-  };
 
+  /* ======================
+     REGISTER TEACHER
+  ====================== */
   const handleRegister = () => {
-    if (!form.name || !form.id) {
+    if (!form.id || !form.name) {
       alert("Teacher ID and Name are required");
       return;
     }
 
-    onRegister(form);
+    if (teachers.find(t => t.id === form.id)) {
+      alert("Teacher already exists");
+      return;
+    }
+
+    const newTeacher = {
+      id: form.id,
+      name: form.name,
+      email: form.email,
+      phone: form.phone,
+      years: parseCommaList(form.years),
+      programs: parseCommaList(form.programs),
+      department: admin.department || "N/A",
+      courses: parseCourses(form.courses),
+      password: form.id // default password
+    };
+
+    const updated = [...teachers, newTeacher];
+    localStorage.setItem("teachers", JSON.stringify(updated));
+    setTeachers(updated);
 
     setForm({
       id: "",
       name: "",
       email: "",
       phone: "",
-      year: "",
-      program: "",
-      dept: "",
+      years: "",
+      programs: "",
       courses: ""
     });
+
+    alert(`Teacher Registered\nID: ${newTeacher.id}\nPassword: ${newTeacher.password}`);
   };
 
+  /* ======================
+     SEARCH
+  ====================== */
   const handleSearch = () => {
     if (!filterYear || !filterProgram) {
-      alert("Please select both Year and Program");
+      alert("Select Year & Program");
       return;
     }
 
-    const result = allTeachers.filter(
+    const result = teachers.filter(
       t =>
-        t.year === filterYear &&
-        t.program === filterProgram
+        t.years.includes(filterYear) &&
+        t.programs.includes(filterProgram)
     );
 
     setFilteredTeachers(result);
+  };
+
+  /* ======================
+     DELETE
+  ====================== */
+  const handleDelete = (id) => {
+    if (!window.confirm("Delete this teacher?")) return;
+
+    const updated = teachers.filter(t => t.id !== id);
+    localStorage.setItem("teachers", JSON.stringify(updated));
+    setTeachers(updated);
+    setFilteredTeachers(updated);
+  };
+
+  /* ======================
+     UPDATE COURSES
+  ====================== */
+  const handleUpdateSubmit = () => {
+    const updated = teachers.map(t =>
+      t.id === updateForm.id
+        ? { ...t, courses: parseCourses(updateForm.courses) }
+        : t
+    );
+
+    localStorage.setItem("teachers", JSON.stringify(updated));
+    setTeachers(updated);
+    setShowUpdateModal(false);
+
+    console.log(
+      "Updated Teacher:",
+      updated.find(t => t.id === updateForm.id)
+    );
   };
 
   /* ======================
@@ -91,125 +167,120 @@ const ManageTeachers = ({
   return (
     <div className="content-box">
 
-      {/* HEADER */}
       <div className="section-title">
         👩‍🏫 Manage Teachers
-        <span className="badge">{allTeachers.length} Total Teachers</span>
+        <span className="badge">{teachers.length} Total</span>
       </div>
 
-      {/* REGISTER TEACHER */}
+      {/* REGISTER */}
       <div className="card-inner">
         <h4>Register New Teacher</h4>
 
         <div className="grid-2">
+          <input name="name" placeholder="Full Name *" value={form.name} onChange={handleChange} />
+          <input name="id" placeholder="Teacher ID *" value={form.id} onChange={handleChange} />
+          <input name="email" placeholder="Email" value={form.email} onChange={handleChange} />
+          <input name="phone" placeholder="Phone" value={form.phone} onChange={handleChange} />
+
           <input
-            name="name"
-            placeholder="Full Name *"
-            value={form.name}
+            name="years"
+            placeholder="Years (e.g. 2021, 2022)"
+            value={form.years}
             onChange={handleChange}
           />
 
           <input
-            name="id"
-            placeholder="Teacher ID *"
-            value={form.id}
+            name="programs"
+            placeholder="Programs (e.g. CSIT, AI)"
+            value={form.programs}
             onChange={handleChange}
           />
-
-          <input
-            name="email"
-            placeholder="Email"
-            value={form.email}
-            onChange={handleChange}
-          />
-
-          <input
-            name="phone"
-            placeholder="Phone"
-            value={form.phone}
-            onChange={handleChange}
-          />
-
-          <select name="year" value={form.year} onChange={handleChange}>
-            <option value="">Teaching Year</option>
-            {years.map(y => <option key={y}>{y}</option>)}
-          </select>
-
-          <select name="program" value={form.program} onChange={handleChange}>
-            <option value="">Program</option>
-            {programs.map(p => <option key={p}>{p}</option>)}
-          </select>
-
-          <select name="dept" value={form.dept} onChange={handleChange}>
-            <option value="">Department</option>
-            {departments.map(d => <option key={d}>{d}</option>)}
-          </select>
 
           <input
             name="courses"
-            placeholder="Courses (comma-separated)"
+            placeholder="Courses (CODE: Name, ...)"
             value={form.courses}
             onChange={handleChange}
           />
         </div>
 
-        <br />
         <button className="primary" onClick={handleRegister}>
           Register Teacher
         </button>
       </div>
 
-      {/* SEARCH TEACHERS */}
+      {/* SEARCH */}
       <div className="card-inner small">
         <h4>Search Teachers</h4>
 
         <div className="filters-inline">
-          <select
-            value={filterYear}
-            onChange={(e) => setFilterYear(e.target.value)}
-          >
+          <select value={filterYear} onChange={e => setFilterYear(e.target.value)}>
             <option value="">Select Year</option>
             {years.map(y => <option key={y}>{y}</option>)}
           </select>
 
-          <select
-            value={filterProgram}
-            onChange={(e) => setFilterProgram(e.target.value)}
-          >
+          {/* ✅ ADMIN PROGRAMS ONLY */}
+          <select value={filterProgram} onChange={e => setFilterProgram(e.target.value)}>
             <option value="">Select Program</option>
-            {programs.map(p => <option key={p}>{p}</option>)}
+            {adminPrograms.map(p => <option key={p}>{p}</option>)}
           </select>
 
           <button className="primary-outline" onClick={handleSearch}>
-            Search Teachers
+            Search
           </button>
         </div>
 
         {/* RESULTS */}
         <div className="placeholder">
           {filteredTeachers.length === 0 ? (
-            <p>No teachers found for selected filters.</p>
+            <p>No teachers found.</p>
           ) : (
             <table className="simple-table">
               <thead>
                 <tr>
                   <th>Name</th>
-                  <th>Teacher ID</th>
-                  <th>Year</th>
-                  <th>Program</th>
+                  <th>ID</th>
+                  <th>Years</th>
+                  <th>Programs</th>
                   <th>Department</th>
-                  <th>Email</th>
+                  <th>Courses</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredTeachers.map((t, index) => (
-                  <tr key={index}>
+                {filteredTeachers.map(t => (
+                  <tr key={t.id}>
                     <td>{t.name}</td>
                     <td>{t.id}</td>
-                    <td>{t.year}</td>
-                    <td>{t.program}</td>
-                    <td>{t.dept || "-"}</td>
-                    <td>{t.email || "-"}</td>
+                    <td>{t.years.join(", ")}</td>
+                    <td>{t.programs.join(", ")}</td>
+                    <td>{t.department}</td>
+                    <td>{t.courses.map(c => c.code).join(", ")}</td>
+                    <td>
+                      <div className="modify">
+                        <button
+                          className="update-btn"
+                          onClick={() => {
+                            setUpdateForm({
+                              id: t.id,
+                              courses: t.courses
+                                .map(c => `${c.code}: ${c.name}`)
+                                .join(", ")
+                            });
+                            setShowUpdateModal(true);
+                          }}
+                        >
+                          Update
+                        </button>
+
+                        <button
+                          className="del-btn"
+                          onClick={() => handleDelete(t.id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -217,6 +288,26 @@ const ManageTeachers = ({
           )}
         </div>
       </div>
+
+      {/* UPDATE MODAL */}
+      {showUpdateModal && (
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <h3>Update Courses</h3>
+            <input
+              value={updateForm.courses}
+              onChange={e =>
+                setUpdateForm({ ...updateForm, courses: e.target.value })
+              }
+              placeholder="CODE: Name, ..."
+            />
+            <div className="modal-actions">
+              <button onClick={() => setShowUpdateModal(false)}>Cancel</button>
+              <button onClick={handleUpdateSubmit}>Submit</button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import teacherData from "../data/TeacherData";
 
+import teacherData from "../data/TeacherData";
+import adminData from "../data/AdminData";
 
 const Login = () => {
   const [data, setData] = useState({
@@ -9,7 +10,7 @@ const Login = () => {
     password: "",
     role: "student",
   });
-  
+
   const navigate = useNavigate();
 
   const handleOnChange = (e) => {
@@ -20,18 +21,19 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    /* --------------------------
+    /* =========================
        STUDENT LOGIN
-       -------------------------- */
-  if (data.role === "student") {
+    ========================= */
+    if (data.role === "student") {
       const students = JSON.parse(localStorage.getItem("students")) || [];
+
       const student = students.find(
         (s) =>
-          s.id === data.email ||
-          (s.email === data.email && s.password === data.password)
+          (s.email === data.email || s.id === data.email) &&
+          s.password === data.password
       );
 
-      if (student && student.password === data.password) {
+      if (student) {
         localStorage.setItem(
           "currentUser",
           JSON.stringify({
@@ -41,6 +43,7 @@ const Login = () => {
             email: student.email,
           })
         );
+
         navigate("/student");
         return;
       }
@@ -49,70 +52,77 @@ const Login = () => {
       return;
     }
 
-    /* --------------------------
-       TEACHER LOGIN (FIXED)
-    -------------------------- */
+    /* =========================
+       TEACHER LOGIN
+    ========================= */
+    if (data.role === "teacher") {
+      const teacher = teacherData.find(
+        (t) =>
+          t.profile.email === data.email &&
+          t.profile.password === data.password
+      );
 
-    // Ensure teachers is ALWAYS an array
-    /* --------------------------
-   TEACHER LOGIN (CORRECT)
--------------------------- */
-if (data.role === "teacher") {
-  console.log("Teacher data:", teacherData);
+      if (teacher) {
+        localStorage.setItem(
+          "currentUser",
+          JSON.stringify({
+            role: "teacher",
+            id: teacher.profile.teacherId,
+            name: teacher.profile.name,
+            email: teacher.profile.email,
+          })
+        );
 
-  // ✅ Authenticate from teacherData (SOURCE OF TRUTH)
-  const teacher = teacherData.find(
-    (t) =>
-      t.profile.email === data.email &&
-      t.profile.password === data.password
-  );
+        // Store teacher in expected format for dashboard
+        localStorage.setItem(
+          "teachers",
+          JSON.stringify([
+            {
+              id: teacher.profile.teacherId,
+              name: teacher.profile.name,
+              dept: teacher.profile.department,
+              courses: teacher.profile.coursesTeaching.join(","),
+            },
+          ])
+        );
 
-  console.log("Matched teacher:", teacher);
+        navigate("/teacher");
+        return;
+      }
 
-  if (teacher) {
-    // ✅ Save current user
-    localStorage.setItem(
-      "currentUser",
-      JSON.stringify({
-        role: "teacher",
-        id: teacher.profile.teacherId,
-        name: teacher.profile.name,
-        email: teacher.profile.email,
-      })
-    );
-
-    // ✅ Save teachers in format expected by TeacherDashboard
-    localStorage.setItem(
-      "teachers",
-      JSON.stringify([
-        {
-          id: teacher.profile.teacherId,
-          name: teacher.profile.name,
-          dept: teacher.profile.department,
-          courses: teacher.profile.coursesTeaching.join(","),
-        },
-      ])
-    );
-
-    navigate("/teacher");
-    return;
-  }
-
-  alert("Invalid teacher credentials");
-  return;
-}
-
-
-    /* --------------------------
-       ADVISOR LOGIN
-    -------------------------- */
-    if (data.role === "advisor") {
-      alert("Advisor module not created. Redirecting to teacher dashboard.");
-      navigate("/teacher");
+      alert("Invalid teacher credentials");
       return;
     }
 
-    alert("Invalid teacher credentials");
+    /* =========================
+       ADMIN LOGIN
+    ========================= */
+    if (data.role === "admin") {
+      const admin = adminData.profile;
+
+      if (
+        admin.email === data.email &&
+        admin.password === data.password
+      ) {
+        localStorage.setItem(
+          "currentUser",
+          JSON.stringify({
+            role: "admin",
+            id: admin.adminId,
+            name: admin.name,
+            email: admin.email,
+            department: admin.department,
+          })
+        );
+
+        navigate("/admin");
+        return;
+      }
+
+      alert("Invalid admin credentials");
+      return;
+    }
+
   };
 
   return (
@@ -152,6 +162,7 @@ if (data.role === "teacher") {
           >
             <option value="student">Student</option>
             <option value="teacher">Teacher</option>
+            <option value="admin">Admin</option>
             <option value="advisor">Advisor</option>
           </select>
 

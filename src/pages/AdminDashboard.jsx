@@ -1,5 +1,5 @@
-// src/pages/AdminDashboard.jsx
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import adminData from "../data/AdminData";
 import AdminHeader from "../components/admin/AdminHeader";
 import AttendanceRequests from "../components/admin/AttendenceRequest";
@@ -8,112 +8,128 @@ import ManageTeachers from "../components/admin/ManageTeacher";
 import ViewAttendance from "../components/admin/ViewAttendence";
 import "../styles/admin.css";
 import { getAttendanceRequests } from "../data/AttendenceRequest";
+
 const AdminDashboard = () => {
-  const [tab, setTab] = useState("requests"); // default to Attendance Requests
-  const [data, setData] = useState(adminData);
-//state declaartion
+  const navigate = useNavigate();
+  const [tab, setTab] = useState("requests");
+  const [requests, setRequests] = useState([]);
 
-const [requests, setRequests] = useState([]);
+  // ✅ AUTHENTICATION (SAME STYLE AS STUDENT)
+  const currentUserStr = localStorage.getItem("currentUser");
+  let adminProfile = null;
 
-useEffect(() => {
-  const data = getAttendanceRequests();
-  console.log("🧑‍💼 Admin loaded requests:", data);
-  setRequests(data);
-}, [tab]);
-
-
-const handleRegisterStudent = (student) => {
-  const stored = JSON.parse(localStorage.getItem("students")) || [];
-
-  const exists = stored.find(s => s.id === student.id);
-  if (exists) {
-    alert("Student already exists");
-    return;
+  if (currentUserStr) {
+    try {
+      const currentUser = JSON.parse(currentUserStr);
+      if (
+        currentUser.role === "admin" &&
+        currentUser.email === adminData.profile.email
+      ) {
+        adminProfile = adminData.profile;
+      }
+    } catch {}
   }
 
-  const newStudent = {
-    ...student,
-    password: student.id // default password
+  // ❌ Not admin → kick out
+  useEffect(() => {
+    if (!adminProfile) navigate("/login");
+  }, [adminProfile, navigate]);
+
+  // ✅ Load requests dynamically
+  useEffect(() => {
+    const data = getAttendanceRequests();
+    setRequests(data);
+  }, [tab]);
+
+  /* ---------------- REGISTER STUDENT ---------------- */
+  const handleRegisterStudent = (student) => {
+    const stored = JSON.parse(localStorage.getItem("students")) || [];
+
+    const exists = stored.find(s => s.id === student.id);
+    if (exists) {
+      alert("Student already exists");
+      return;
+    }
+
+    const newStudent = {
+      ...student,
+      password: student.id
+    };
+
+    stored.push(newStudent);
+    localStorage.setItem("students", JSON.stringify(stored));
+
+    alert(
+      `Student Registered!\n\nLogin:\nID: ${newStudent.id}\nPassword: ${newStudent.password}`
+    );
   };
 
-  stored.push(newStudent);
-  localStorage.setItem("students", JSON.stringify(stored));
+  /* ---------------- REGISTER TEACHER ---------------- */
+  const handleRegisterTeacher = (teacher) => {
+    let storedTeachers = [];
 
-  alert(
-    `Student Registered!\n\nLogin:\nID: ${newStudent.id}\nPassword: ${newStudent.password}`
-  );
-};
+    try {
+      storedTeachers = JSON.parse(localStorage.getItem("teachers")) || [];
+    } catch {
+      storedTeachers = [];
+    }
 
+    if (!Array.isArray(storedTeachers)) storedTeachers = [];
 
-const handleRegisterTeacher = (teacher) => {
-  console.log("Registering teacher:", teacher);
+    const exists = storedTeachers.find(t => t.id === teacher.id);
+    if (exists) {
+      alert("Teacher ID already exists");
+      return;
+    }
 
-  let storedTeachers = [];
+    const newTeacher = {
+      ...teacher,
+      password: teacher.id,
+      dept: adminProfile.department // ✅ same department as admin
+    };
 
-  try {
-    const raw = localStorage.getItem("teachers");
-    storedTeachers = raw ? JSON.parse(raw) : [];
-  } catch (e) {
-    storedTeachers = [];
-  }
+    storedTeachers.push(newTeacher);
+    localStorage.setItem("teachers", JSON.stringify(storedTeachers));
 
-  // ✅ FORCE array
-  if (!Array.isArray(storedTeachers)) {
-    storedTeachers = [];
-  }
-
-  const exists = storedTeachers.find(t => t.id === teacher.id);
-  if (exists) {
-    alert("Teacher ID already exists");
-    return;
-  }
-
-  const newTeacher = {
-    ...teacher,
-    password: teacher.id // default password
+    alert(
+      `Teacher registered!\n\nLogin:\nID: ${newTeacher.id}\nPassword: ${newTeacher.password}`
+    );
   };
 
-  storedTeachers.push(newTeacher);
-  localStorage.setItem("teachers", JSON.stringify(storedTeachers));
-
-  alert(
-    `Teacher registered!\n\nLogin Details:\nID: ${newTeacher.id}\nPassword: ${newTeacher.password}`
-  );
-};
- 
-return (
+  return (
     <div className="admin-page">
       <AdminHeader tab={tab} setTab={setTab} />
 
- {tab === "requests" && (
-  <AttendanceRequests requests={requests} />
-)}
-  {tab === "students" && (
+      {tab === "requests" && (
+        <AttendanceRequests requests={requests} />
+      )}
+
+      {tab === "students" && (
         <ManageStudents
-          students={data.students}
-          years={data.years}
-          programs={data.programs}
+          students={adminData.students}
+          years={adminData.years}
+          programs={adminData.programs}
           onRegister={handleRegisterStudent}
         />
       )}
 
       {tab === "teachers" && (
         <ManageTeachers
-          teachers={data.teachers}
-          years={data.years}
-          programs={data.programs}
-          departments={data.departments}
+          teachers={adminData.teachers}
+          years={adminData.years}
+          programs={adminData.programs}
+          departments={adminData.departments}
           onRegister={handleRegisterTeacher}
         />
       )}
 
       {tab === "view" && (
         <ViewAttendance
-          years={data.years}
-          batches={data.batches}
-          programs={data.programs}
-          courses={data.courses}
-          records={data.studentAttendanceRecords}
+          years={adminData.years}
+          batches={adminData.batches}
+          programs={adminData.programs}
+          courses={adminData.courses}
+          records={adminData.studentAttendanceRecords}
         />
       )}
     </div>
