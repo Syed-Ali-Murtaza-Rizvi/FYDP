@@ -1,18 +1,17 @@
-// src/pages/Signup.jsx
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import "../styles/auth.css";
 
 const Signup = () => {
-  const navigate = useNavigate();
+  const [role, setRole] = useState("");
 
   const [form, setForm] = useState({
-    universityName: "",
-    adminName: "",
+    name: "",
     email: "",
     password: "",
-    programs: "",
-    courses: ""
+    university: "",
+    department: "",
+    eventName: "",
+    phone: ""
   });
 
   const handleChange = (e) => {
@@ -20,72 +19,143 @@ const Signup = () => {
   };
 
   const handleSignup = () => {
-    if (!form.universityName || !form.adminName || !form.email || !form.password) {
-      alert("Please fill all required fields");
+    if (!role) {
+      alert("Please select a role");
       return;
     }
 
-    const admin = {
-      id: Date.now(),
-      role: "admin",
-      universityName: form.universityName,
-      adminName: form.adminName,
-      email: form.email,
-      password: form.password,
-      programs: form.programs.split(",").map(p => p.trim()),
-      courses: form.courses.split(",").map(c => c.trim())
+    if (!form.name || !form.email || !form.password) {
+      alert("Please fill required fields");
+      return;
+    }
+
+    const newUser = {
+      role,
+      ...form,
+      createdAt: new Date().toISOString()
     };
 
-    localStorage.setItem("universityAdmin", JSON.stringify(admin));
-    localStorage.setItem("currentUser", JSON.stringify(admin));
+    // save based on role
+    const key =
+      role === "admin"
+        ? "admins"
+        : role === "eventAdmin"
+        ? "eventAdmins"
+        : "participants";
 
-    alert("University Admin Registered Successfully ✅");
-    navigate("/admin");
+    const existing = JSON.parse(localStorage.getItem(key)) || [];
+    existing.push(newUser);
+    localStorage.setItem(key, JSON.stringify(existing));
+
+    // save logged-in user
+    localStorage.setItem(
+      "currentUser",
+      JSON.stringify({
+        role,
+        name: form.name,
+        email: form.email
+      })
+    );
+
+    alert(`${role} signup successful`);
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <h2>University Admin Signup</h2>
+    <div className="signup-page">
+      <div className="signup-card">
+        <h2>Signup</h2>
 
-        <input
-          name="universityName"
-          placeholder="University Name *"
-          value={form.universityName}
-          onChange={handleChange}
-        />
+        {/* ROLE SELECTION */}
+        <label>Select Role</label>
+        <select value={role} onChange={(e) => setRole(e.target.value)}>
+          <option value="">Choose role</option>
+          <option value="admin">University Admin</option>
+          <option value="eventAdmin">Event Admin</option>
+          <option value="participant">Participant</option>
+        </select>
 
-        <input
-          name="adminName"
-          placeholder="Admin Name *"
-          value={form.adminName}
-          onChange={handleChange}
-        />
+        {/* COMMON FIELDS */}
+        {role && (
+          <>
+            <input
+              name="name"
+              placeholder="Full Name"
+              value={form.name}
+              onChange={handleChange}
+            />
 
-        <input
-          name="email"
-          placeholder="Email *"
-          value={form.email}
-          onChange={handleChange}
-        />
+            <input
+              name="email"
+              placeholder="Email"
+              value={form.email}
+              onChange={handleChange}
+            />
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password *"
-          value={form.password}
-          onChange={handleChange}
-        />
+            <input
+              name="password"
+              type="password"
+              placeholder="Password"
+              value={form.password}
+              onChange={handleChange}
+            />
+          </>
+        )}
 
-        <input
-          name="programs"
-          placeholder="Programs (e.g. BSCS, BSIT, AI)"
-          value={form.programs}
-          onChange={handleChange}
-        />
+        {/* UNIVERSITY ADMIN FORM */}
+        {role === "admin" && (
+          <>
+            <input
+              name="university"
+              placeholder="University Name"
+              value={form.university}
+              onChange={handleChange}
+            />
 
+            <input
+              name="department"
+              placeholder="Department"
+              value={form.department}
+              onChange={handleChange}
+            />
+          </>
+        )}
 
-        <button onClick={handleSignup}>Submit</button>
+        {/* EVENT ADMIN FORM */}
+        {role === "eventAdmin" && (
+          <>
+            <input
+              name="eventName"
+              placeholder="Event Name"
+              value={form.eventName}
+              onChange={handleChange}
+            />
+
+            <input
+              name="phone"
+              placeholder="Contact Number"
+              value={form.phone}
+              onChange={handleChange}
+            />
+          </>
+        )}
+
+        {/* PARTICIPANT FORM */}
+        {role === "participant" && (
+          <>
+            <input
+              name="phone"
+              placeholder="Phone Number"
+              value={form.phone}
+              onChange={handleChange}
+            />
+          </>
+        )}
+
+        {role && (
+          <button className="primary" onClick={handleSignup}>
+            Signup
+          </button>
+        )}
       </div>
     </div>
   );
