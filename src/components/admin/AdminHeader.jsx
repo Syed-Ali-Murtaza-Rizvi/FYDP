@@ -2,7 +2,6 @@
 import React from "react";
 
 const AdminHeader = ({ tab, setTab }) => {
-  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
   return (
     <div className="admin-header">
       <div className="admin-left">
@@ -10,9 +9,7 @@ const AdminHeader = ({ tab, setTab }) => {
 </div>
         <div>
           <h2>Admin Dashboard</h2>
-         <p className="muted">
-            Welcome, {currentUser?.adminName || "Administrator"}
-          </p>
+          <p className="muted">Welcome, Administrator</p>
         </div>
       </div>
 
