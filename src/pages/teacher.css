@@ -47,6 +47,7 @@
   display: flex;
   flex-direction: column;
   gap: 35px;
+ 
 }
 
 
@@ -54,7 +55,7 @@
    WELCOME BANNER
 --------------------------- */
 .welcome-banner {
-  background-color: #7b0000;
+  background-color: #2C5F9E;
   color: white;
   padding: 14px 25px;
   border-radius: 12px;
@@ -69,12 +70,12 @@
 .card {
   background: white;
   border-radius: 18px;
-  border: 2px solid #cde7cd;
+  box-shadow: #737373;
   padding-bottom: 20px;
 }
 
 .card-title {
-  background: #a3032d;
+  background: #2C5F9E;
   color: white;
   padding: 14px 20px;
   border-radius: 16px 16px 0 0;
@@ -102,7 +103,7 @@
   width: 100%;
   padding: 10px;
   margin-top: 4px;
-  border: 1px solid #ccc;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
   border-radius: 6px;
   font-size: 15px;
 }
@@ -125,16 +126,16 @@
 }
 
 .start-btn {
-  background: #5b0000;
+  background: #2C5F9E;
   color: white;
 }
 
 .start-btn:hover {
-  background: #8b0000;
+  background: #2C5F9E;
 }
 
 .stop-btn {
-  background: #8b0000;
+  background: #2C5F9E;
   color: white;
   width: 180px;
   margin-left: auto;
@@ -142,18 +143,18 @@
 }
 
 .stop-btn:hover {
-  background: #a00000;
+  background: #2C5F9E;
 }
 
 .new-btn {
-  background: #600000;
+  background: #2C5F9E;
   color: white;
   width: 200px;
   margin: 25px auto 0;
 }
 
 .new-btn:hover {
-  background: #900000;
+  background: #2C5F9E;
 }
 
 
@@ -165,8 +166,7 @@
 }
 
 .active-box {
-  background: #fff7d9;
-  border: 2px solid #e7d796;
+  background: #dcf3ff;
   padding: 20px;
   margin: 20px;
   border-radius: 10px;
@@ -178,7 +178,7 @@
 --------------------------- */
 .success-box {
   background: #e4f8e4;
-  border: 2px solid #a7e0a7;
+  border: 2px solid #022658;
   padding: 20px;
   margin: 20px;
   border-radius: 10px;
@@ -268,7 +268,7 @@
 .modal-header h3 {
   margin: 0;
   font-size: 20px;
-  color: #7a0010;
+  color: #2C5F9E;
 }
 
 .close-btn {
@@ -309,7 +309,7 @@
 
 .submit-btn {
   padding: 8px 14px;
-  background: #7a0010;
+  background: #2C5F9E;
   color: white;
   border-radius: 8px;
   cursor: pointer;
@@ -317,7 +317,7 @@
 
 .update-btn {
   padding: 8px 14px;
-  background: #7a0010;
+  background: #2C5F9E;
   color: white;
   border-radius: 8px;
   cursor: pointer;
@@ -353,3 +353,58 @@
 .top-actions .update-btn{
     margin-left: 650px;
 }
+
+.teacher-card {
+  width: 350px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  text-align: center;
+  position: relative;
+  padding-bottom: 30px;
+  height: 390px;
+}
+
+.card-header {
+  height: 120px;
+  background: #2C5F9E;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+}
+
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  background: #f0f2f5;
+  border-radius: 50%;
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 6px solid white;
+}
+
+.teacher-name {
+  color:rgb(8, 8, 49);
+  margin-top: 80px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.teacher-details {
+  list-style: none;
+  padding: 0;
+  margin-top: 20px;
+  text-align: left;
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.teacher-details li {
+  margin-bottom: 10px;
+}
+

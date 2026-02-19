@@ -1,15 +1,20 @@
-import React from 'react'
+import React from "react";
+import logo from "../assets/trustmark.png";
+
 
 const Navbar = () => {
   return (
-    <nav className="w-full bg-red-900 py-4 shadow-md">
-      <div className="max-w-8xl  px-6">
-        <h1 className="text-white text-lg ">
-          Attendance Management System
-        </h1>
-      </div>
+    <nav className="w-full bg-white h-20 shadow-md flex items-center">
+      
+      {/* Logo */}
+      <img 
+        src={logo} 
+        alt="TrustMark Logo" 
+        className="h-40 w-auto object-contain ml-4"
+      />
+
     </nav>
   );
 };
 
-export default Navbar
+export default Navbar;

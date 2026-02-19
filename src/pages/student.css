@@ -1,11 +1,10 @@
 /* Whole Page Background */
-html, body {
+ html, body {
   /* FIX 1: Prevent global horizontal scroll bar */
   overflow-x: hidden; 
 }
-
 body {
-  background-color: #e7d4d4;
+  background-color: #EEF3FA;
   margin: 0;
   font-family: Arial, sans-serif;
 }
@@ -20,33 +19,32 @@ body {
   box-sizing: border-box;
 }
 
+/*----main heading---*/
+.mainhead{
+  color:black;
+}
 /* Top heading */
 .heading {
-  background-color: #7b0000;
-  color: white;
-  padding: 14px 25px;
-  font-size: 18px;
-  font-weight: 500;
+  color: #1E2A38;
+  /* padding: 14px 25px; */
+  font-size: 20px;
+  font-weight: bold;
   border-radius: 12px;
-  margin-top: 15px;
+  margin-top: 5px;
   margin-bottom: 25px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  /* FIX 3: Ensure heading doesn't overflow its parent */
   max-width: 100%;
   box-sizing: border-box;
 }
 
 .heading h1 {
   margin: 0;
-  font-size: 22px;
-  /* Ensure h1 content doesn't break parent flex layout */
+  font-size: 35px;
   min-width: 0; 
 }
-
-/* Buttons inside heading container */
 .heading-buttons {
   display: flex;
   gap: 10px;
@@ -54,20 +52,22 @@ body {
 
 /* Buttons inside heading */
 .heading button {
-  background-color: #ddd;
-  color: black;
+  background-color: #2C5F9E;
+  color: white;
   border-radius: 10px;
   padding: 6px 12px;
   border: none;
   font-size: 14px;
   cursor: pointer;
+  width:150px;
   transition: background-color 0.2s;
 }
 
 /* Specific Mark Attendance Button */
 .heading .mark-attendance-btn {
-  background-color: #4CAF50;
-  color: white;
+  background-color: white;
+  border: 1px solid #2C5F9E;
+  color: #2C5F9E;
   padding: 8px 12px;
 }
 
@@ -80,100 +80,7 @@ body {
   max-width: 100%; 
 }
 
-/* Profile Card */
-.profile-card {
-  background: white;
-  border-radius: 18px;
-  padding: 25px;
-  border: 2px solid #d3c4c4;
-  text-align: center;
-  height: fit-content;
-}
 
-.profile-avatar {
-  font-size: 80px;
-  color: #5a2568;
-  margin-bottom: 15px;
-}
-
-/* Right content container */
-.right-content {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  width: 100%;
-  /* FIX 4: Ensure content scales down */
-  min-width: 0; 
-}
-
-/* Generic Card */
-.card {
-  background: white;
-  border-radius: 18px;
-  padding: 30px;
-  border: 2px solid #cce2cc;
-  width: 100%;
-  box-sizing: border-box;
-  /* FIX 5: Ensure cards respect parent width */
-  max-width: 100%;
-  overflow: hidden; /* Prevent internal content from busting card width */
-}
-
-.card-title {
-  background: #a3042d;
-  color: white;
-  padding: 12px 20px;
-  font-size: 16px;
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
-  font-weight: 600;
-}
-
-.card-content {
-  padding: 20px 25px;
-  font-size: 15px;
-  /* Allow content wrapper to shrink */
-  min-width: 0; 
-}
-
-/* Table Container */
-.course-table {
-  width: 100%;
-  /* FIX 6: Use overflow-x auto for tables only, keep content inside card */
-  overflow-x: auto; 
-  overflow-y: hidden;
-}
-
-.course-table table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-  table-layout: auto;
-  /* Force table min-width to prevent squashing on small screens, relies on parent overflow-x: auto */
-  min-width: 500px; 
-}
-
-.course-table th,
-.course-table td {
-  padding: 12px 14px;
-  border-bottom: 1px solid #ddd;
-  font-size: 15px;
-  text-align: left;
-  white-space: nowrap; 
-}
-
-.course-table th {
-  font-weight: 600;
-  background-color: #f7f7f7;
-}
-
-.course-table tr:nth-child(even) {
-  background-color: #fafafa;
-}
-
-.course-table tr:hover {
-  background-color: #f0f0f0;
-}
 
 /* QR Scanner container */
 .qr-scanner-container {
@@ -221,7 +128,7 @@ body {
 
   /* HEADER FIX */
   .heading {
-    padding: 12px 15px;
+    /* padding: 12px 15px; */
     border-radius: 8px;
     flex-direction: column; 
     align-items: flex-start;
@@ -258,6 +165,7 @@ body {
     width: 95%; 
   }
 
+  
   .card-content {
     padding: 12px 15px; 
     font-size: 14px;
@@ -304,4 +212,259 @@ body {
     width: 100%;
     max-width: 400px;
   }
+} 
+/*left card*/
+
+.profile-container {
+  width: 300px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  margin: 60px auto;
+  position: relative;
+  text-align: center;
+  height: 53%;
+  margin-top: 10px;
+  margin-left: 0px;
+}
+
+/* Blue Top Header */
+.profile-header {
+  height: 110px;
+  background-color: #355e9b;
+}
+
+/* Circular Avatar */
+.profile-avatar {
+  width: 130px;
+  height: 130px;
+  background-color: #d9e2f1;
+  border-radius: 50%;
+  position: absolute;
+  top: 55px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 8px solid #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-icon {
+  font-size: 55px;
+  color: #6b7c93;
+}
+
+/* Content */
+.profile-content {
+  /* padding: 100px 30px 30px; */
+  padding: 80px 30px 30px;
+}
+
+.profile-name {
+  margin-bottom: 20px;
+  font-weight: 700;
+  color: #1f2d3d;
+}
+
+/* List Styling */
+.profile-list {
+  list-style: none;
+  padding: 0;
+  text-align: left;
+  margin-bottom: 25px;
+}
+
+.profile-list li {
+  margin: 12px 0;
+  color: #4a5568;
+  position: relative;
+  padding-left: 18px;
+  font-size: 15px;
+}
+
+/* Custom bullet */
+.profile-list li::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background-color: #6b7c93;
+  border-radius: 50%;
+  position: absolute;
+  left: 0;
+  top: 8px;
+}
+
+/* Button */
+.scan-btn {
+  width: 100%;
+  padding: 14px;
+  background-color: #355e9b;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.scan-btn:hover {
+  background-color: #2c4d82;
+}
+
+/*----- semester performance-----*/
+.performance-card {
+  width: 100%;
+  max-width: 1200px;
+  margin: 30px auto;
+  margin-left: 2px;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* Header */
+.performance-header {
+  background: linear-gradient(to right, #2f5fa7, #3f6fb6);
+  color: white;
+  padding: 16px 24px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Body */
+.performance-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30px;
+}
+
+/* Left Section */
+.attendance-section {
+  flex: 1;
+}
+
+.label {
+  color: #6b7c93;
+  font-size: 15px;
+  margin-bottom: 8px;
+}
+
+.percentage {
+  font-size: 42px;
+  font-weight: 700;
+  color: #1f2d3d;
+}
+
+/* Status */
+.status-section {
+  flex: 1;
+  text-align: center;
+}
+
+.status-text {
+  color: #2e7d32;
+  font-size: 26px;
+  font-weight: 600;
+}
+
+/* Progress Ring */
+.progress-ring {
+  flex: 0 0 auto;
+}
+
+.ring-bg {
+  fill: none;
+  stroke: #e6eaf2;
+  stroke-width: 8;
+}
+
+.ring-progress {
+  fill: none;
+  stroke: #2f5fa7;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+  transition: stroke-dashoffset 0.6s ease;
+}
+
+/*----- course table----*/
+
+.course-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.attendance-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+/* Header */
+.attendance-table thead th {
+  text-align: left;
+  padding: 16px 12px;
+  font-weight: 600;
+  color: #6b7c93;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Body */
+.attendance-table tbody td {
+  padding: 18px 12px;
+  vertical-align: middle;
+  border-bottom: 1px solid #f1f3f6;
+  font-size: 14px;
+  color: #1f2d3d;
+}
+
+/* Keep row single-line */
+.attendance-table tbody tr {
+  height: 70px;
+}
+
+/* Bar Group (Keeps text + bar inline) */
+.bar-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Progress Bar */
+.progress-bar {
+  width: 120px;
+  height: 8px;
+  background: #e6eaf2;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #2f5fa7;
+  border-radius: 6px;
+  transition: width 0.4s ease;
+}
+
+/* Lighter bar */
+.progress-bar.light .progress-fill {
+  background: #9db4d8;
+}
+
+/* Zebra striping like your screenshot */
+.attendance-table tbody tr:nth-child(even) {
+  background-color: #f9fafc;
+}
+/* Outer Green Border Container */
+.outer-wrapper {
+  background: #f3f4f6;
+  padding: 40px;
+  display: flex;
+  justify-content: center;
 }

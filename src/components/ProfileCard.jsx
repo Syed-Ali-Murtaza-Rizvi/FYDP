@@ -13,19 +13,30 @@ console.log("ProfileCard storedUser data:", storedUser);
     return <p>Loading profile...</p>;
   }
      return (
-   <div className="profile-card">
-  <div className="profile-avatar">👤</div>
-  <h3>{profile?.name || "Student"}</h3>
+  <div className="profile-container">
+      <div className="profile-header"></div>
 
-  <p><strong>Student ID:</strong> {profile.studentId}</p>
-   <p><strong>Email:</strong> {user.email}</p>
-  <p><strong>Role:</strong> {user.role}</p>
-  <p><strong>Year:</strong> {profile.year}</p>
-  <p><strong>Section:</strong> {profile.section}</p>
-  <p><strong>Department:</strong> {profile.department}</p>
-</div>
+      <div className="profile-avatar">
+        <div className="avatar-icon">👤</div>
+      </div>
 
-     );
+      <div className="profile-content">
+        <h2 className="profile-name">
+          <strong>{profile?.name || "John Smith"}</strong>
+        </h2>
+
+        <ul className="profile-list">
+          <li>Student ID: {profile.studentId}</li>
+          <li>Year: {profile.year}</li>
+          <li>Section: {profile.section}</li>
+          <li>Department: {profile.department}</li>
+        </ul>
+
+        <button className="scan-btn">
+          Scan QR for Attendance
+        </button>
+      </div>
+    </div>
+  );
 };
-
 export default ProfileCard;

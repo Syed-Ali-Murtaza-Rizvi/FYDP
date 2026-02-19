@@ -6,6 +6,8 @@ import CourseTable from "../components/CourseTable";
 import students from "../data/StudentData";
 import "./student.css";
 import { Html5Qrcode } from "html5-qrcode";
+import bgImage from '../assets/background.jpeg';
+
 
 const StudentDashboard = () => {
   const navigate = useNavigate();
@@ -172,12 +174,18 @@ const StudentDashboard = () => {
   }, []);
 console.log("Profile data:", profile);  
   return (
-    <div className="dashboard-wrapper">
+    <div className="dashboard-wrapper" style={{
+    backgroundImage: `url(${bgImage})`,
+    backgroundSize: 'cover',
+    backgroundRepeat: 'no-repeat',
+    minHeight: '100vh',
+    minWidth:'100%',
+    padding:'40px'}}>
       <div className="dashboard-grid">
         <ProfileCard profile={profile} />
         <div className="right-content">
           <div className="heading">
-            <h1>Welcome back, {profile?.name || "Student"}!</h1>
+            <h1><span className="mainhead">Welcome back,</span> {profile?.name || "Student"}!</h1>
             <div className="heading-buttons">
               <button onClick={startScanner} className="mark-attendance-btn">
                 Mark Attendance
@@ -202,22 +210,62 @@ console.log("Profile data:", profile);
             </div>
           )}
 
-          <div className="card">
-            <div className="card-title">Current Semester Performance</div>
-            <div className="card-content">
-              <SemesterPerformance overall={overallAttendance} />
-            </div>
-          </div>
+       <div className="performance-card">
+  <div className="performance-header">
+    Current Semester Performance
+  </div>
 
-          <div className="card course-table">
-            <div className="card-title">Course-wise Attendance</div>
-            <div className="card-content">
-              <CourseTable courses={courses} />
-            </div>
+  <div className="performance-body">
+    <div className="attendance-section">
+      <p className="label">Overall Attendance</p>
+      <h1 className="percentage">{overallAttendance.percentage}%</h1>
+    </div>
+
+    <div className="status-section">
+      <p className="label">Status:</p>
+      <h2 className="status-text">{overallAttendance.status}</h2>
+    </div>
+
+    <div className="progress-ring">
+      <svg width="90" height="90">
+        <circle
+          className="ring-bg"
+          cx="45"
+          cy="45"
+          r="38"
+        />
+        <circle
+          className="ring-progress"
+          cx="45"
+          cy="45"
+          r="38"
+          style={{
+            strokeDasharray: 2 * Math.PI * 38,
+            strokeDashoffset:
+              2 * Math.PI * 38 *
+              (1 - overallAttendance.percentage / 100),
+          }}
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+
+  <div className="performance-card">
+    <div className="performance-header">
+      Course-wise Attendance
+    </div>
+
+    <div className="card-content">
+      <CourseTable courses={courses} />
+    </div>
+  </div>
+</div>
+
           </div>
         </div>
-      </div>
-    </div>
+    
+    
   );
 };
 

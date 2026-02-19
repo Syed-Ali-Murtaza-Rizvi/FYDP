@@ -7,6 +7,8 @@ import TeacherDashboard from '../pages/TeacherDashboard'
 import AdminDashboard from '../pages/AdminDashboard'
 import EventAdminDashboard from '../pages/EventAdminDashboard'
 import Signup from '../pages/SignUp'
+import OrganizationalAdminDashboard from '../pages/OrganizationalAdminDashboard'
+
 
 const RootRedirect = () => {
     useEffect(() => {
@@ -30,6 +32,7 @@ const router = createBrowserRouter([
             { path:"admin",element: <AdminDashboard/>},
             {path:"eventadmin",element:<EventAdminDashboard/>},
             {path:"signup",element:<Signup/>},
+            {path:"orgadmin",element:<OrganizationalAdminDashboard/>}
         ]
     },
 ])

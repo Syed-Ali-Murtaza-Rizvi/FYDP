@@ -3,6 +3,8 @@ import teacherData from "../data/TeacherData";
 import "./teacher.css";
 import { addAttendanceRequest } from "../data/AttendenceRequest";
 import QRGenerator from "../components/GenerateQRCode";
+import { FaChalkboardTeacher } from "react-icons/fa";
+import bgImage from '../assets/background.jpeg';
 
 const TeacherDashboard = ({}) => {
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
@@ -119,18 +121,39 @@ const submitAttendanceRequest = () => {
 
 
   return (
-    <div className="teacher-wrapper">
-      {/* PROFILE CARD */}
-      <div className="profile-card">
-        <div className="profile-avatar">{profile.avatar}</div>
-        <h3>{profile.name}</h3>
-        <p><strong>Teacher ID:</strong> {profile.teacherId}</p>
-        <p><strong>Department:</strong> {profile.department}</p>
-        <div className="teach-list">
-          <strong>Courses Teaching:</strong><br />
-          {profile.coursesTeaching.join(", ")}
-        </div>
-      </div>
+    <div className="teacher-wrapper"style={{
+        backgroundImage: `url(${bgImage})`,
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
+        minHeight: '100%',
+        minWidth:'100%',
+        padding:'40px'}}>
+
+  <div className="teacher-card">
+
+    {/* Top Blue Header */}
+    <div className="card-header"></div>
+
+    {/* Avatar Circle */}
+    <div className="profile-avatar">
+      <FaChalkboardTeacher color="#2C5F9E" size={50} />
+    </div>
+
+    {/* Teacher Details */}
+    <h3 className="teacher-name">{profile.name}</h3>
+
+    <ul className="teacher-details">
+      <li><strong>Teacher ID:</strong> {profile.teacherId}</li>
+      <li><strong>Department:</strong> {profile.department}</li>
+      <li>
+        <strong>Courses Teaching:</strong> {profile.coursesTeaching.join(", ")}
+      </li>
+    </ul>
+
+  </div>
+
+
+
 
       {/* RIGHT SECTION */}
       <div className="right-section">
