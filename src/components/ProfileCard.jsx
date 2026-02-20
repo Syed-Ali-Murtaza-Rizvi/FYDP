@@ -1,8 +1,7 @@
 import React from "react";
 import { User } from "lucide-react";
 
-
-const ProfileCard = ({ profile }) => {
+const ProfileCard = ({ profile, onScanClick }) => {
   // 1️⃣ Read from localStorage
 
   const storedUser = localStorage.getItem("currentUser");
@@ -33,9 +32,11 @@ console.log("ProfileCard storedUser data:", storedUser);
           <li>Department: {profile.department}</li>
         </ul>
 
-        <button className="scan-btn">
-          Scan QR for Attendance
-        </button>
+        {typeof onScanClick === "function" && (
+          <button className="scan-btn" onClick={onScanClick}>
+            Scan QR for Attendance
+          </button>
+        )}
       </div>
     </div>
   );

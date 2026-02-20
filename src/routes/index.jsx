@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import App from "../App"
 import Login from "../pages/Login"
-import StudentDashboard from '../pages/StudentDashboard'
+import StudentDashboard from '../pages/Student/StudentDashboard'
 import TeacherDashboard from '../pages/TeacherDashboard'
 import AdminDashboard from '../pages/AdminDashboard'
 import EventAdminDashboard from '../pages/EventAdminDashboard'

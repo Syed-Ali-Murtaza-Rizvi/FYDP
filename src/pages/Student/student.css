@@ -1,8 +1,10 @@
+/* ================= GLOBAL ================= */
+
 /* Whole Page Background */
- html, body {
-  /* FIX 1: Prevent global horizontal scroll bar */
-  overflow-x: hidden; 
+html, body {
+  overflow-x: hidden;
 }
+
 body {
   background-color: #EEF3FA;
   margin: 0;
@@ -14,43 +16,58 @@ body {
   width: 92%;
   margin: auto;
   padding: 20px 0;
-  /* FIX 2: Ensure wrapper doesn't exceed screen size */
   max-width: 100%;
   box-sizing: border-box;
 }
 
-/*----main heading---*/
-.mainhead{
-  color:black;
+/* Main heading */
+.mainhead {
+  color: black;
 }
-/* Top heading */
-.heading {
-  color: #1E2A38;
-  /* padding: 14px 25px; */
-  font-size: 20px;
-  font-weight: bold;
-  border-radius: 12px;
-  margin-top: 5px;
-  margin-bottom: 25px;
+
+/* ================= DASHBOARD WELCOME ================= */
+.dashboard-welcome {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  max-width: 100%;
-  box-sizing: border-box;
+  margin-bottom: 25px;
+  padding: 0px 25px;
 }
 
-.heading h1 {
-  margin: 0;
-  font-size: 35px;
-  min-width: 0; 
+.welcome-text {
+  font-size: 22px;
+  font-weight: 600;
+  color: #1e2a38;
 }
+
+.welcome-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* Logout Button */
+.logout-btn {
+  background-color: #355e9b;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.logout-btn:hover {
+  background-color: #2c4d82;
+}
+
+/* ================= HEADING BUTTONS (Other buttons) ================= */
 .heading-buttons {
   display: flex;
   gap: 10px;
 }
 
-/* Buttons inside heading */
 .heading button {
   background-color: #2C5F9E;
   color: white;
@@ -59,11 +76,10 @@ body {
   border: none;
   font-size: 14px;
   cursor: pointer;
-  width:150px;
+  width: 150px;
   transition: background-color 0.2s;
 }
 
-/* Specific Mark Attendance Button */
 .heading .mark-attendance-btn {
   background-color: white;
   border: 1px solid #2C5F9E;
@@ -71,18 +87,21 @@ body {
   padding: 8px 12px;
 }
 
-/* Grid Layout */
+/* ================= DASHBOARD GRID ================= */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 330px 1fr;
+  grid-template-columns: 300px 1fr;
   gap: 35px;
-  /* Ensure the grid itself doesn't cause overflow */
-  max-width: 100%; 
+  max-width: 100%;
+  align-items: start;
 }
 
+/* Dashboard right content */
+.dashboard-right {
+  width: 100%;
+}
 
-
-/* QR Scanner container */
+/* ================= QR SCANNER ================= */
 .qr-scanner-container {
   margin-top: 20px;
   width: 320px;
@@ -94,148 +113,73 @@ body {
   box-sizing: border-box;
 }
 
+/* QR Scanner Modal */
+.qr-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.qr-modal {
+  width: 360px;
+  max-width: 100%;
+  padding: 15px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+}
+
+.qr-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.qr-modal-header h3 {
+  margin: 0;
+  color: #1E2A38;
+  font-size: 18px;
+}
+
+.qr-modal-close {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  color: #1E2A38;
+  padding: 2px 6px;
+}
+
 #qr-reader {
   width: 100%;
 }
 
-/* ================================
-    RESPONSIVE DESIGN
-=================================*/
-
-/* Tablets (768px) */
-@media (max-width: 768px) {
-  .dashboard-grid {
-    grid-template-columns: 1fr; 
-  }
-}
-
-/* Mobile Phones (500px and below) - Critical Fixes */
-@media (max-width: 500px) {
-
-  .profile-card {
-    display: none;
-  }
-
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-
-  .dashboard-wrapper {
-    width: 100%; /* Ensure full screen utilization */
-    padding: 10px; /* Uniform padding on all sides */
-  }
-
-  /* HEADER FIX */
-  .heading {
-    /* padding: 12px 15px; */
-    border-radius: 8px;
-    flex-direction: column; 
-    align-items: flex-start;
-    gap: 5px;
-  }
-
-  .heading h1 {
-    font-size: 16px;
-    margin-bottom: 8px;
-    max-width: 100%; /* Crucial to prevent overflow */
-    overflow: hidden;
-    text-overflow: ellipsis; /* Optional: truncate long titles */
-    white-space: nowrap; /* Keep title on one line */
-  }
-
-  .heading-buttons {
-    flex-direction: column; 
-    width: 100%;
-    gap: 8px;
-  }
-
-  .heading button {
-    font-size: 15px;
-    padding: 10px 10px;
-    border-radius: 8px;
-    width: 100%; 
-  }
-
-  /* CARD AND CONTENT FIX */
-  .card {
-    padding: 8px;
-    border-radius: 12px;
-    margin-top: 10px;
-    width: 95%; 
-  }
-
-  
-  .card-content {
-    padding: 12px 15px; 
-    font-size: 14px;
-  }
-  
-  /* TABLE FIX */
-  .course-table table {
-    min-width: 100%; /* Ensure table doesn't collapse too much */
-  }
-  
-  .course-table th,
-  .course-table td {
-    white-space: normal; /* Allow text to wrap if the column is narrow */
-    font-size: 12px;
-    padding: 5px;
-  }
-
-  /* QR Scanner Fullscreen Modal */
-  .qr-scanner-container {
-    width: 80vw;
-    height: 100vh;
-    position: fixed;
-    top: 0;
-    left: 0;
-    margin: 0;
-    border-radius: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    background: #fff;
-    box-shadow: none;
-    padding: 20px;
-  }
-
-  .qr-scanner-container h3 {
-    margin-top: -20vh;
-    margin-bottom: 20px;
-    font-size: 18px;
-  }
-
-  #qr-reader {
-    width: 100%;
-    max-width: 400px;
-  }
-} 
-/*left card*/
-
+/* ================= PROFILE CARD ================= */
 .profile-container {
   width: 300px;
   background: #ffffff;
   border-radius: 16px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  margin: 60px auto;
-  position: relative;
   text-align: center;
-  height: 53%;
-  margin-top: 10px;
-  margin-left: 0px;
+  position: relative;
+  margin: 0;
 }
 
-/* Blue Top Header */
 .profile-header {
   height: 110px;
   background-color: #355e9b;
 }
 
-/* Circular Avatar */
 .profile-avatar {
   width: 130px;
   height: 130px;
@@ -256,47 +200,34 @@ body {
   color: #6b7c93;
 }
 
-/* Content */
 .profile-content {
-  /* padding: 100px 30px 30px; */
   padding: 80px 30px 30px;
 }
 
 .profile-name {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   font-weight: 700;
   color: #1f2d3d;
 }
 
-/* List Styling */
 .profile-list {
   list-style: none;
   padding: 0;
-  text-align: left;
-  margin-bottom: 25px;
+  text-align: center;
+  display: flex;
+  font-weight: 600;
+  flex-direction: column;
+  align-items: center;
 }
 
 .profile-list li {
-  margin: 12px 0;
+  margin: 8px 0;
   color: #4a5568;
-  position: relative;
-  padding-left: 18px;
+  position: static;
+  padding-left: 0;
   font-size: 15px;
 }
 
-/* Custom bullet */
-.profile-list li::before {
-  content: "";
-  width: 8px;
-  height: 8px;
-  background-color: #6b7c93;
-  border-radius: 50%;
-  position: absolute;
-  left: 0;
-  top: 8px;
-}
-
-/* Button */
 .scan-btn {
   width: 100%;
   padding: 14px;
@@ -313,12 +244,11 @@ body {
   background-color: #2c4d82;
 }
 
-/*----- semester performance-----*/
+/* ================= PERFORMANCE CARD ================= */
 .performance-card {
   width: 100%;
   max-width: 1200px;
   margin: 30px auto;
-  margin-left: 2px;
   background: #ffffff;
   border-radius: 14px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
@@ -326,7 +256,6 @@ body {
   font-family: "Segoe UI", sans-serif;
 }
 
-/* Header */
 .performance-header {
   background: linear-gradient(to right, #2f5fa7, #3f6fb6);
   color: white;
@@ -335,15 +264,19 @@ body {
   font-weight: 600;
 }
 
-/* Body */
 .performance-body {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 40px;
   padding: 30px;
 }
 
-/* Left Section */
+.status-ring-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
 .attendance-section {
   flex: 1;
 }
@@ -360,7 +293,6 @@ body {
   color: #1f2d3d;
 }
 
-/* Status */
 .status-section {
   flex: 1;
   text-align: center;
@@ -372,7 +304,6 @@ body {
   font-weight: 600;
 }
 
-/* Progress Ring */
 .progress-ring {
   flex: 0 0 auto;
 }
@@ -393,8 +324,7 @@ body {
   transition: stroke-dashoffset 0.6s ease;
 }
 
-/*----- course table----*/
-
+/* ================= COURSE TABLE ================= */
 .course-table-wrapper {
   width: 100%;
   overflow-x: auto;
@@ -406,7 +336,6 @@ body {
   table-layout: fixed;
 }
 
-/* Header */
 .attendance-table thead th {
   text-align: left;
   padding: 16px 12px;
@@ -415,7 +344,6 @@ body {
   border-bottom: 1px solid #e5e7eb;
 }
 
-/* Body */
 .attendance-table tbody td {
   padding: 18px 12px;
   vertical-align: middle;
@@ -424,19 +352,16 @@ body {
   color: #1f2d3d;
 }
 
-/* Keep row single-line */
 .attendance-table tbody tr {
   height: 70px;
 }
 
-/* Bar Group (Keeps text + bar inline) */
 .bar-group {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-/* Progress Bar */
 .progress-bar {
   width: 120px;
   height: 8px;
@@ -452,19 +377,83 @@ body {
   transition: width 0.4s ease;
 }
 
-/* Lighter bar */
 .progress-bar.light .progress-fill {
   background: #9db4d8;
 }
 
-/* Zebra striping like your screenshot */
 .attendance-table tbody tr:nth-child(even) {
   background-color: #f9fafc;
 }
-/* Outer Green Border Container */
-.outer-wrapper {
-  background: #f3f4f6;
-  padding: 40px;
-  display: flex;
-  justify-content: center;
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 500px) {
+  .profile-card {
+    display: none;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .dashboard-wrapper {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .dashboard-welcome {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .welcome-actions {
+    width: 100%;
+  }
+
+  .logout-btn {
+    width: 100%;
+  }
+
+  .heading button {
+    font-size: 15px;
+    padding: 10px 10px;
+    border-radius: 8px;
+    width: 100%;
+  }
+
+  .card {
+    padding: 8px;
+    border-radius: 12px;
+    margin-top: 10px;
+    width: 100%;
+  }
+
+  .card-content {
+    padding: 12px 15px;
+    font-size: 14px;
+  }
+
+  .attendance-table th,
+  .attendance-table td {
+    white-space: normal;
+    font-size: 12px;
+    padding: 5px;
+  }
+
+  .qr-modal {
+    width: 100%;
+    padding: 20px;
+  }
+
+  #qr-reader {
+    max-width: 400px;
+    margin: 0 auto;
+  }
 }
