@@ -9,6 +9,7 @@ import { Html5Qrcode } from "html5-qrcode";
 import bgImage from '../assets/background.jpeg';
 
 
+
 const StudentDashboard = () => {
   const navigate = useNavigate();
   const [scannerOpen, setScannerOpen] = useState(false);

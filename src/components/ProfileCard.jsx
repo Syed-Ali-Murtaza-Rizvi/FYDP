@@ -1,4 +1,5 @@
 import React from "react";
+import { User } from "lucide-react";
 
 
 const ProfileCard = ({ profile }) => {
@@ -17,7 +18,7 @@ console.log("ProfileCard storedUser data:", storedUser);
       <div className="profile-header"></div>
 
       <div className="profile-avatar">
-        <div className="avatar-icon">👤</div>
+        <div className="avatar-icon"> <User size={50} color="#5A6F8E" strokeWidth={2.5} /></div>
       </div>
 
       <div className="profile-content">
