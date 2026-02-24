@@ -13,41 +13,47 @@ body {
 /* DASHBOARD HEADER */
 /* ============================= */
 .orgdash{
-    margin-left: 40px;
+    margin-left: 30px;
+     min-height: 100vh;
+     min-width: 100%;
+  background: url("../assets/background.jpeg") no-repeat center center fixed;
+  background-size: cover;
+  padding: 30px 20px 80px;
+
 }
 .mainn{
     margin-top: 30px;
 }
 
 .mainn h2{
-     color: #8b0000;
-     font-weight: 600;
-     font-size: larger;
-
+     color: #122038;
+     font-weight: 700;
+     font-size: 30px;
 }
 
 /* ============================= */
 /* TABS NAVIGATION */
 /* ============================= */
 .mainbox{
- background-color: white;
+ background: linear-gradient(10deg, white, white);
   padding: 0px;
   width: 98%;
   
-  border-radius: 12px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+  border-radius: 30px;
+  box-shadow: 0px 4px 10px #122038;
   margin-bottom: 30px;}
 
   /* OUTER WRAPPER */
 .tabs-container {
   display: flex;
   gap: 8px;
-  background-color: #e5e7eb;
+  background: linear-gradient(10deg, white, #5f8dd3);;;
   padding: 8px;
   /* border-radius: 30px; */
   width: 100%;
   justify-content: center;
   margin-bottom: 25px;
+  border-radius: 10px;
 }
 
 /* BASE TAB STYLE */
@@ -72,7 +78,7 @@ body {
 
 /* ACTIVE TAB */
 .tab.active {
-  background-color: #8b0000;
+  background-color: #2c4d82;
   color: white;
 }
 
@@ -319,24 +325,35 @@ td button:hover {
   gap: 24px;
   padding: 30px 200px 60px;
 }
-
-/* CARD */
+  
 .card {
-  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(12px);
-  border-radius: 18px;
+   background: rgba(255, 255, 255, 0.75);
+  border-radius: 10px;
   padding: 20px;
   display: flex;
   align-items: center;
   gap: 25px;
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.05),
+    0 4px 10px rgba(44, 77, 130, 0.08);
+  
 
-  box-shadow:
-    0 10px 30px rgba(44, 77, 130, 0.12);
+  /* box-shadow:
+    0 10px 30px rgba(44, 77, 130, 0.12); */
 
   transition: all 0.3s ease;
   cursor: pointer;
 }
-
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 5px;
+  width: 100%;
+  background: linear-gradient(90deg, #2c4d82, #5f8dd3);
+}
 .card:hover {
   transform: translateY(-6px);
   box-shadow:
@@ -408,4 +425,24 @@ td button:hover {
   .card-content h2 {
     font-size: 24px;
   }
+}
+
+
+
+/*new*/
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+  transition: all 0.3s ease;
+}
+.icon-box {
+  background: linear-gradient(135deg, #2c4d82, #4f7ccf);
+}
+.orgdash::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(3px);
+  z-index: -1;
 }
