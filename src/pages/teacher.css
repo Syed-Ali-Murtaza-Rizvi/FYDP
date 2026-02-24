@@ -4,7 +4,7 @@
   grid-template-columns: 330px 1fr;
   gap: 40px;
   width: 92%;
-  margin: 20px auto;
+  margin: 0 auto;
   font-family: Arial, sans-serif;
 }
 
@@ -341,7 +341,8 @@
 }
 .top-actions{
     display: flex;
-    justify-content: space-between;
+  justify-content: flex-end;
+  gap: 12px;
 }
 .top-actions .btn{
      background-color: white;
@@ -351,7 +352,7 @@
     height: 40px;
 }
 .top-actions .update-btn{
-    margin-left: 650px;
+  margin-left: 0;
 }
 
 .teacher-card {

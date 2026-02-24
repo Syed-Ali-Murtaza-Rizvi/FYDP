@@ -10,7 +10,7 @@ export default function EventModal({ event, onClose }) {
       <div className="modal" role="dialog" aria-modal="true">
         <div className="modal-head">
           <div>
-            <h2>{event.title}</h2>
+            <h2 style={{ fontWeight: "bold", fontSize: 24 }}>{event.title}</h2>
             <div style={{ color: "#777", marginTop: 6 }}>Event details and management</div>
           </div>
           <button onClick={onClose}>✖</button>
