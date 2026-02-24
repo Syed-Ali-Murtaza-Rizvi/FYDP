@@ -312,3 +312,100 @@ td button:hover {
     font-size: 12px;
   }
 }
+/* GRID */
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  padding: 30px 200px 60px;
+}
+
+/* CARD */
+.card {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  border-radius: 18px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 25px;
+
+  box-shadow:
+    0 10px 30px rgba(44, 77, 130, 0.12);
+
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 18px 40px rgba(44, 77, 130, 0.18);
+}
+
+/* ICON CIRCLE */
+.icon {
+  width: 55px;
+  height: 55px;
+  border-radius: 14px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: white;
+}
+
+/* ICON COLORS */
+.blue {
+  background: linear-gradient(135deg, #2c4d82, #6ea8ff);
+}
+
+.purple {
+  background: linear-gradient(135deg, #2c4d82, #6ea8ff);
+}
+
+.green {
+  background: linear-gradient(135deg, #2c4d82, #6ea8ff);
+}
+
+.orange {
+  background: linear-gradient(135deg, #2c4d82, #6ea8ff);
+}
+
+.cyan {
+  background: linear-gradient(135deg, #2c4d82, #6ea8ff);
+}
+
+.red {
+  background: linear-gradient(135deg, #2c4d82, #6ea8ff)
+}
+
+/* TEXT */
+.card-content span {
+  font-size: 15px;
+  color: #6b7c93;
+  font-weight: 500;
+}
+
+.card-content h2 {
+  margin: 4px 0 0;
+  font-size: 30px;
+  font-weight: 700;
+  color: #2c4d82;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .overview-grid {
+    gap: 18px;
+  }
+
+  .card {
+    padding: 20px;
+  }
+
+  .card-content h2 {
+    font-size: 24px;
+  }
+}

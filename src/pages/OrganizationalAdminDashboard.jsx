@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import orgAdminData from "../data/OrgAdminData";
 import "../styles/orgAdmin.css";
+import  LayoutDashboard from "lucide-react";;
+
 
 
 import Overview from "../components/OrgAdmin/Overview";
@@ -47,7 +49,7 @@ const OrganizationalAdminDashboard = () => {
     className={activeTab === "overview" ? "tab active" : "tab"}
     onClick={() => setActiveTab("overview")}
   >
-    <span className="tab-icon">📈</span>
+    <span className="tab-icon"> <LayoutDashboard size={18} /></span>
     Overview
   </button>
 
