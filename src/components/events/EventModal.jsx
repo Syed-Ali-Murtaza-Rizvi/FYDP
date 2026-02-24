@@ -1,5 +1,6 @@
 // src/components/events/EventModal.jsx
 import React, { useState } from "react";
+import { User } from "lucide-react";
 
 export default function EventModal({ event, onClose }) {
   const [tab, setTab] = useState("details"); // details | participants | attendance
@@ -65,7 +66,7 @@ export default function EventModal({ event, onClose }) {
                   <tbody>
                     {event.participants?.map(p => (
                       <tr key={p.id}>
-                        <td>👤</td>
+                        <td><User size={23} color="#2c4d82" strokeWidth={2.5} /></td>
                         <td>{p.name}</td>
                         <td>{p.email}</td>
                         <td>{p.phone}</td>
