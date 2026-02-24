@@ -19,10 +19,6 @@ const AdminHeader = ({ tab, setTab }) => {
         <button className={tab==="teachers" ? "tab active" : "tab"} onClick={() => setTab("teachers")}>Manage Teachers</button>
         <button className={tab==="view" ? "tab active" : "tab"} onClick={() => setTab("view")}>View Attendance</button>
       </div>
-
-      <div className="admin-right">
-        <button className="logout-btn">Logout</button>
-      </div>
     </div>
   );
 };

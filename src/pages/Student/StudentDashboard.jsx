@@ -35,8 +35,6 @@ const StudentDashboard = () => {
     if (!profile) navigate("/login");
   }, [profile, navigate]);
 
-  const handleLogout = () => navigate("/login");
-
   /* ================= QR SCANNER ================= */
   const stopScanner = async () => {
     if (!html5QrCodeRef.current) return;
@@ -124,11 +122,6 @@ const StudentDashboard = () => {
             <div className="dashboard-welcome">
               <div className="welcome-text">
                 <span className="mainhead">Welcome back,</span> {profile.name}!
-              </div>
-              <div className="welcome-actions">
-                <button className="logout-btn" onClick={handleLogout}>
-                  Logout
-                </button>
               </div>
             </div>
 

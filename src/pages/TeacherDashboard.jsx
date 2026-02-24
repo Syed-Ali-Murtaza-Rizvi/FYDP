@@ -74,11 +74,6 @@ const TeacherDashboard = ({}) => {
     }
   }, [state]);
 
-  const logout = () => {
-    localStorage.removeItem("currentUser");
-    window.location.href = "/";
-  };
-
   // Reset all selections and QR state
   const resetForm = () => {
     setState("form");
@@ -161,7 +156,6 @@ const submitAttendanceRequest = () => {
           <button className="update-btn" onClick={() => setShowUpdateModal(true)}>
             🔄 Update Attendance Request
           </button>
-          <button className="btn" onClick={logout}>Logout</button>
         </div>
 
         <div className="welcome-banner">

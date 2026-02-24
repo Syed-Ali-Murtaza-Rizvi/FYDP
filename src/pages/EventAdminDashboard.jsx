@@ -49,7 +49,6 @@ export default function EventAdminDashboard() {
             >
               ＋ Create Event
             </button>
-            <button className="btn logout">Logout</button>
           </div>
         </div>
 
