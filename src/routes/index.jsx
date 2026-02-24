@@ -27,12 +27,14 @@ const router = createBrowserRouter([
         children: [
             { index: true, element: <RootRedirect /> },
             { path: "login", element: <Login/> },
+            { path: "forgot-password", element: <Navigate to="/login" replace /> },
             { path: "student", element: <StudentDashboard/> },
             { path: "teacher", element: <TeacherDashboard/> },
             { path:"admin",element: <AdminDashboard/>},
             {path:"eventadmin",element:<EventAdminDashboard/>},
             {path:"signup",element:<Signup/>},
-            {path:"orgadmin",element:<OrganizationalAdminDashboard/>}
+            {path:"orgadmin",element:<OrganizationalAdminDashboard/>},
+            { path: "*", element: <Navigate to="/login" replace /> },
         ]
     },
 ])

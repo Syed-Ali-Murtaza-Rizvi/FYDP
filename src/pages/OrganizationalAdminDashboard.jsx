@@ -1,10 +1,7 @@
 import React, { useState } from "react";
 import orgAdminData from "../data/OrgAdminData";
 import "../styles/orgAdmin.css";
-import  LayoutDashboard from "lucide-react";;
-
-
-
+import { LayoutDashboard } from "lucide-react";
 import Overview from "../components/OrgAdmin/Overview";
 import Admins from "../components/OrgAdmin/Admins";
 import EventAdmins from "../components/OrgAdmin/EventAdmins";

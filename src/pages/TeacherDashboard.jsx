@@ -116,13 +116,17 @@ const submitAttendanceRequest = () => {
 
 
   return (
-    <div className="teacher-wrapper"style={{
+    <div
+      className="teacher-page"
+      style={{
         backgroundImage: `url(${bgImage})`,
-        backgroundSize: 'cover',
-        backgroundRepeat: 'no-repeat',
-        minHeight: '100%',
-        minWidth:'100%',
-        padding:'40px'}}>
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
+
+    <div className="teacher-wrapper">
 
   <div className="teacher-card">
 
@@ -288,41 +292,53 @@ const submitAttendanceRequest = () => {
           <div className="card">
             <div className="card-title">Live Attendance Form</div>
             <div className="card-content">
-              <label>Batch</label>
-              <select value={selectedBatch} onChange={e => setSelectedBatch(e.target.value)}>
-                <option value="">Select batch</option>
-                {batches.map(b => <option key={b}>{b}</option>)}
-              </select>
+              <div className="form-grid">
+                <div className="form-field">
+                  <label>Batch</label>
+                  <select value={selectedBatch} onChange={e => setSelectedBatch(e.target.value)}>
+                    <option value="">Select batch</option>
+                    {batches.map(b => <option key={b}>{b}</option>)}
+                  </select>
+                </div>
 
-              <label>Program</label>
-              <select value={selectedProgram} onChange={e => setSelectedProgram(e.target.value)}>
-                <option value="">Select program</option>
-                {programs.map(p => <option key={p}>{p}</option>)}
-              </select>
+                <div className="form-field">
+                  <label>Program</label>
+                  <select value={selectedProgram} onChange={e => setSelectedProgram(e.target.value)}>
+                    <option value="">Select program</option>
+                    {programs.map(p => <option key={p}>{p}</option>)}
+                  </select>
+                </div>
 
-              <label>Attendance Type</label>
-              <select value={selectedType} onChange={e => setSelectedType(e.target.value)}>
-                <option value="">Select type</option>
-                {attendanceTypes.map(a => <option key={a}>{a}</option>)}
-              </select>
+                <div className="form-field">
+                  <label>Attendance Type</label>
+                  <select value={selectedType} onChange={e => setSelectedType(e.target.value)}>
+                    <option value="">Select type</option>
+                    {attendanceTypes.map(a => <option key={a}>{a}</option>)}
+                  </select>
+                </div>
 
-              <label>Course Name</label>
-              <select value={selectedCourse} onChange={e => setSelectedCourse(e.target.value)}>
-                <option value="">Select course</option>
-                {courses.map(c => (
-                  <option key={c.code} value={c.code}>
-                    {c.code} – {c.name}
-                  </option>
-                ))}
-              </select>
+                <div className="form-field form-field-full">
+                  <label>Course Name</label>
+                  <select value={selectedCourse} onChange={e => setSelectedCourse(e.target.value)}>
+                    <option value="">Select course</option>
+                    {courses.map(c => (
+                      <option key={c.code} value={c.code}>
+                        {c.code} – {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-              <label>Number of Slots</label>
-              <input
-                type="number"
-                placeholder="Enter number of slots"
-                value={selectedSlots}
-                onChange={e => setSelectedSlots(e.target.value)}
-              />
+                <div className="form-field">
+                  <label>Number of Slots</label>
+                  <input
+                    type="number"
+                    placeholder="Enter number of slots"
+                    value={selectedSlots}
+                    onChange={e => setSelectedSlots(e.target.value)}
+                  />
+                </div>
+              </div>
 
               <button
                 className="start-btn"
@@ -371,6 +387,7 @@ const submitAttendanceRequest = () => {
         )}
 
       </div>
+    </div>
     </div>
   );
 };

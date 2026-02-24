@@ -1,4 +1,11 @@
 /* MAIN WRAPPER LAYOUT */
+.teacher-page {
+  min-height: 100vh;
+  width: 100%;
+  padding: 40px;
+  box-sizing: border-box;
+}
+
 .teacher-wrapper {
   display: grid;
   grid-template-columns: 330px 1fr;
@@ -6,6 +13,12 @@
   width: 92%;
   margin: 0 auto;
   font-family: Arial, sans-serif;
+}
+
+@media (max-width: 900px) {
+  .teacher-page {
+    padding: 20px;
+  }
 }
 
 .profile-card {
@@ -70,8 +83,23 @@
 .card {
   background: white;
   border-radius: 18px;
-  box-shadow: #737373;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
   padding-bottom: 20px;
+  border: 1px solid #ddd;
+}
+
+/* Ensure other pages' global .card styles (e.g. orgAdmin) don't break this layout */
+.teacher-wrapper .card {
+  display: block;
+}
+
+.teacher-wrapper .card-title {
+  width: 100%;
+  display: block;
+}
+
+.teacher-wrapper .card-content {
+  width: 100%;
 }
 
 .card-title {
@@ -87,13 +115,31 @@
   padding: 25px 30px;
 }
 
+/* --------------------------
+   FORM GRID (LIVE FORM)
+--------------------------- */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 18px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-field-full {
+  grid-column: 1 / -1;
+}
+
 
 /* --------------------------
    FORM INPUTS
 --------------------------- */
 .card-content label {
   display: block;
-  margin-top: 12px;
+  margin-top: 0;
   font-weight: 600;
   font-size: 15px;
 }
@@ -102,10 +148,29 @@
 .card-content input {
   width: 100%;
   padding: 10px;
-  margin-top: 4px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  margin-top: 6px;
+  box-shadow: none;
+  border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 15px;
+  background: white;
+  min-height: 40px;
+}
+
+.card-content select:focus,
+.card-content input:focus {
+  outline: none;
+  border-color: #2C5F9E;
+}
+
+@media (max-width: 900px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card-content {
+    padding: 20px;
+  }
 }
 
 
