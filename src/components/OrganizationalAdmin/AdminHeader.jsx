@@ -8,7 +8,7 @@ const AdminHeader = ({ tab, setTab }) => {
   return (
     <div className="admin-header">
       <div className="admin-left">
-        <div className="admin-icon"> <User size={18} color="#6b7c93" />
+        <div className="admin-icon"> <User size={18} color="#ffffff" />
 </div>
         <div>
           <h2>Admin Dashboard</h2>
