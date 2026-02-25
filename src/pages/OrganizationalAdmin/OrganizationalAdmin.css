@@ -1,0 +1,55 @@
+/* Organizational Admin Dashboard theme + background */
+
+body.orgadmin-page {
+  background-image: url("../../assets/background.jpeg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+/* Button theme (scoped to this page only) */
+body.orgadmin-page .admin-page .tab,
+body.orgadmin-page .admin-page .review-btn,
+body.orgadmin-page .admin-page .add-btn,
+body.orgadmin-page .admin-page .primary,
+body.orgadmin-page .admin-page .primary-outline,
+body.orgadmin-page .admin-page .logout-btn {
+  background: #3f6fb6;
+  color: #fff;
+  border-color: #3f6fb6;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+body.orgadmin-page .admin-page .tab:hover,
+body.orgadmin-page .admin-page .review-btn:hover,
+body.orgadmin-page .admin-page .add-btn:hover,
+body.orgadmin-page .admin-page .primary:hover,
+body.orgadmin-page .admin-page .primary-outline:hover,
+body.orgadmin-page .admin-page .logout-btn:hover {
+  background: #2f5fa7;
+  border-color: #2f5fa7;
+  color: #fff;
+}
+
+/* Active tab */
+body.orgadmin-page .admin-page .tab.active {
+  background: #2f5fa7;
+  border-color: #2f5fa7;
+  box-shadow: 0 6px 18px rgba(47, 95, 167, 0.18);
+}
+
+/* View Attendance: sub-tabs (Individual / Course-wise) */
+body.orgadmin-page .admin-page .sub-tabs button {
+  background: #3f6fb6;
+  color: #fff;
+  border-color: #3f6fb6;
+}
+
+body.orgadmin-page .admin-page .sub-tabs button:hover,
+body.orgadmin-page .admin-page .sub-tabs button.active {
+  background: #2f5fa7;
+  border-color: #2f5fa7;
+  color: #fff;
+}

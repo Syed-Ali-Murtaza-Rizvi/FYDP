@@ -241,6 +241,23 @@ input, select, textarea {
 .sub-tabs{
    display: flex;
    gap: 13px;
+   align-items: center;
+}
+
+.sub-tabs > div{
+  flex: 1;
+}
+
+.sub-tabs button{
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 14px;
+  border-radius: 29px;
+  border: 2px solid transparent;
+  background: #fff;
+  color: #333;
+  font-weight: 600;
+  cursor: pointer;
 }
 /* .sub-tabs .ind{
  width:280px;
@@ -304,11 +321,9 @@ input, select, textarea {
   .admin-tabs { flex-wrap:wrap; justify-content:flex-start; gap:8px; }
   .modal-box { width:92%; margin:0 10px; }
 }
-.active{
-color: #650000;
-border: 2px solid #650000;
-padding: 10px;
-border-radius: 29px;
+.sub-tabs button.active{
+  color: #650000;
+  border-color: #650000;
 }
 /*-----------filtered resukt---------------*/
 .simple-table {

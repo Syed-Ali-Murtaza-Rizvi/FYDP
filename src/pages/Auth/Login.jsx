@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import teacherData from "../../data/TeacherData";
 import adminData from "../../data/AdminData";
-import backgroundImg from "../../assets/background.jpeg";
+import "./Login.css";
 
 const Login = () => {
   const [data, setData] = useState({
@@ -12,29 +12,10 @@ const Login = () => {
   });
 
   useEffect(() => {
-    const bodyStyle = document.body.style;
-    const prev = {
-      backgroundImage: bodyStyle.backgroundImage,
-      backgroundSize: bodyStyle.backgroundSize,
-      backgroundPosition: bodyStyle.backgroundPosition,
-      backgroundRepeat: bodyStyle.backgroundRepeat,
-      backgroundAttachment: bodyStyle.backgroundAttachment,
-      backgroundColor: bodyStyle.backgroundColor,
-    };
-
-    bodyStyle.backgroundImage = `url(${backgroundImg})`;
-    bodyStyle.backgroundSize = "cover";
-    bodyStyle.backgroundPosition = "center";
-    bodyStyle.backgroundRepeat = "no-repeat";
-    bodyStyle.backgroundAttachment = "fixed";
+    document.body.classList.add("login-bg");
 
     return () => {
-      bodyStyle.backgroundImage = prev.backgroundImage;
-      bodyStyle.backgroundSize = prev.backgroundSize;
-      bodyStyle.backgroundPosition = prev.backgroundPosition;
-      bodyStyle.backgroundRepeat = prev.backgroundRepeat;
-      bodyStyle.backgroundAttachment = prev.backgroundAttachment;
-      bodyStyle.backgroundColor = prev.backgroundColor;
+      document.body.classList.remove("login-bg");
     };
   }, []);
 
@@ -124,7 +105,7 @@ const Login = () => {
     /* =========================
        ADMIN LOGIN
     ========================= */
-    if (data.role === "admin") {
+    if (data.role === "orgadmin") {
       const admin = adminData.profile;
 
       if (
@@ -134,7 +115,7 @@ const Login = () => {
         localStorage.setItem(
           "currentUser",
           JSON.stringify({
-            role: "admin",
+            role: "orgadmin",
             id: admin.adminId,
             name: admin.name,
             email: admin.email,
@@ -142,7 +123,7 @@ const Login = () => {
           })
         );
 
-        navigate("/admin");
+        navigate("/orgadmin");
         return;
       }
 
@@ -189,7 +170,7 @@ const Login = () => {
           >
             <option value="student">Student</option>
             <option value="teacher">Teacher</option>
-            <option value="admin">Admin</option>
+            <option value="orgadmin">Organization Admin</option>
             <option value="advisor">Event Admin</option>
             <option value="participant">Participant</option>
           </select>

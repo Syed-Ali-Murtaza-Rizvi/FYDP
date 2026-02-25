@@ -4,16 +4,17 @@ import App from "../App"
 import Login from "../pages/Auth/Login"
 import StudentDashboard from '../pages/Student/StudentDashboard'
 import TeacherDashboard from '../pages/Teacher/TeacherDashboard'
-import AdminDashboard from '../pages/AdminDashboard'
+import OrganizationalAdminDashboard from '../pages/OrganizationalAdmin/OrganizationalAdminDashboard'
 import EventAdminDashboard from '../pages/EventAdminDashboard'
 import Signup from '../pages/Auth/SignUp'
-import OrganizationalAdminDashboard from '../pages/OrganizationalAdminDashboard'
+import AdminDashboard from '../pages/AdminDashboard'
 
 
 const RootRedirect = () => {
     useEffect(() => {
         try {
-            localStorage.clear();
+            // Keep persisted app data (e.g., attendance requests). Only clear auth.
+            localStorage.removeItem("currentUser");
         } catch (e) {}
     }, []);
 
