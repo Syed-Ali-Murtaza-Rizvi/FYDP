@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import "../styles/auth.css";
-
+import "../Auth/Signup.css";
 const Signup = () => {
   const [role, setRole] = useState("");
 

@@ -1,9 +1,10 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../assets/trustmark.png";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   let currentUser = null;
   try {
@@ -14,6 +15,10 @@ const Navbar = () => {
   }
 
   const isLoggedIn = Boolean(currentUser);
+
+  const pathname = location?.pathname || "";
+  const isLoginPage = pathname === "/login";
+  const isSignupPage = pathname === "/signup";
 
   const handleLogout = () => {
     localStorage.removeItem("currentUser");
@@ -33,18 +38,22 @@ const Navbar = () => {
       <div className="flex items-center gap-2">
         {!isLoggedIn ? (
           <>
-            <Link
-              to="/login"
-              className="px-4 py-2 rounded border border-blue-900 text-blue-900"
-            >
-              Login
-            </Link>
-            <Link
-              to="/signup"
-              className="px-4 py-2 rounded bg-blue-900 text-white"
-            >
-              Sign Up
-            </Link>
+            {!isLoginPage && (
+              <Link
+                to="/login"
+                className="px-4 py-2 rounded border border-[#3f6fb6] text-[#3f6fb6] hover:bg-[#2f5fa7] hover:text-white hover:border-[#2f5fa7]"
+              >
+                Login
+              </Link>
+            )}
+            {!isSignupPage && (
+              <Link
+                to="/signup"
+                className="px-4 py-2 rounded bg-[#3f6fb6] hover:bg-[#2f5fa7] text-white"
+              >
+                Sign Up
+              </Link>
+            )}
           </>
         ) : (
           <button

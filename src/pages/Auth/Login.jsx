@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
-import teacherData from "../data/TeacherData";
-import adminData from "../data/AdminData";
+import teacherData from "../../data/TeacherData";
+import adminData from "../../data/AdminData";
+import backgroundImg from "../../assets/background.jpeg";
 
 const Login = () => {
   const [data, setData] = useState({
@@ -10,6 +10,33 @@ const Login = () => {
     password: "",
     role: "student",
   });
+
+  useEffect(() => {
+    const bodyStyle = document.body.style;
+    const prev = {
+      backgroundImage: bodyStyle.backgroundImage,
+      backgroundSize: bodyStyle.backgroundSize,
+      backgroundPosition: bodyStyle.backgroundPosition,
+      backgroundRepeat: bodyStyle.backgroundRepeat,
+      backgroundAttachment: bodyStyle.backgroundAttachment,
+      backgroundColor: bodyStyle.backgroundColor,
+    };
+
+    bodyStyle.backgroundImage = `url(${backgroundImg})`;
+    bodyStyle.backgroundSize = "cover";
+    bodyStyle.backgroundPosition = "center";
+    bodyStyle.backgroundRepeat = "no-repeat";
+    bodyStyle.backgroundAttachment = "fixed";
+
+    return () => {
+      bodyStyle.backgroundImage = prev.backgroundImage;
+      bodyStyle.backgroundSize = prev.backgroundSize;
+      bodyStyle.backgroundPosition = prev.backgroundPosition;
+      bodyStyle.backgroundRepeat = prev.backgroundRepeat;
+      bodyStyle.backgroundAttachment = prev.backgroundAttachment;
+      bodyStyle.backgroundColor = prev.backgroundColor;
+    };
+  }, []);
 
   const navigate = useNavigate();
 
@@ -128,12 +155,12 @@ const Login = () => {
   return (
     <div className="flex justify-center items-center min-h-[80vh] p-4">
       <div className="max-w-md w-full mx-auto border border-gray-300 rounded-2xl p-8 bg-white">
-        <div className="text-red-900 text-center mb-6 text-4xl font-semibold">
+        <div className="text-[#2f5fa7] text-center mb-6 text-4xl font-semibold">
           Login
         </div>
 
         <form onSubmit={handleSubmit}>
-          <label className="block text-red-800 text-sm">Email</label>
+          <label className="block text-[#2f5fa7] text-sm">Email</label>
           <input
             type="email"
             name="email"
@@ -143,7 +170,7 @@ const Login = () => {
             className="w-full border px-4 py-2 rounded mb-3"
           />
 
-          <label className="block text-red-800 text-sm">Password</label>
+          <label className="block text-[#2f5fa7] text-sm">Password</label>
           <input
             type="password"
             name="password"
@@ -153,7 +180,7 @@ const Login = () => {
             className="w-full border px-4 py-2 rounded mb-3"
           />
 
-          <label className="block text-red-800 text-sm">Login as</label>
+          <label className="block text-[#2f5fa7] text-sm">Login as</label>
           <select
             name="role"
             value={data.role}
@@ -163,15 +190,16 @@ const Login = () => {
             <option value="student">Student</option>
             <option value="teacher">Teacher</option>
             <option value="admin">Admin</option>
-            <option value="advisor">Advisor</option>
+            <option value="advisor">Event Admin</option>
+            <option value="participant">Participant</option>
           </select>
 
-          <button className="w-full bg-red-900 text-white py-2 rounded">
+          <button className="w-full bg-[#3f6fb6] hover:bg-[#2f5fa7] text-white py-2 rounded">
             Login
           </button>
 
           <div className="text-center mt-3">
-            <Link to="/forgot-password" className="text-red-900 text-sm">
+            <Link to="/forgot-password" className="text-[#2f5fa7] text-sm">
               Forgot Password?
             </Link>
           </div>

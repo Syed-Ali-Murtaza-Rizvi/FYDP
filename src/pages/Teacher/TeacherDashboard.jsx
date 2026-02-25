@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import teacherData from "../data/TeacherData";
+import teacherData from "../../data/TeacherData";
 import "./teacher.css";
-import { addAttendanceRequest } from "../data/AttendenceRequest";
-import QRGenerator from "../components/GenerateQRCode";
+import { addAttendanceRequest } from "../../data/AttendenceRequest";
+import QRGenerator from "../../components/GenerateQRCode";
 import { FaChalkboardTeacher } from "react-icons/fa";
-import bgImage from '../assets/background.jpeg';
+import bgImage from '../../assets/background.jpeg';
 
 const TeacherDashboard = ({}) => {
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
