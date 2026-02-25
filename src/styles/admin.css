@@ -100,8 +100,9 @@ body{
 /*section title bar*/
 .section-title {
   display:flex;
+  align-items: center;
   justify-content: space-between;
-  gap:1px;
+  gap: 12px;
   background: var(--maroon);
   color:#fff;
   padding:10px 14px;
@@ -110,6 +111,12 @@ body{
   margin-bottom:14px;
   /* width:max-content; */
   width: 100%;
+}
+
+.section-title-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 /* ---------- Mini utilities ---------- */

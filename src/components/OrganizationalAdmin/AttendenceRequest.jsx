@@ -25,7 +25,9 @@ const AttendanceRequests = ({ requests = [] }) => {
   if (!allRequests.length) {
     return (
       <div className="content-box">
-        <div className="section-title"> Pending Attendance Update Requests</div>
+        <div className="section-title">
+          <span className="section-title-left">Pending Attendance Update Requests</span>
+        </div>
         <p style={{ padding: "10px", color: "#777" }}>No attendance update requests yet.</p>
       </div>
     );
@@ -33,7 +35,12 @@ const AttendanceRequests = ({ requests = [] }) => {
 
   return (
     <div className="content-box">
-      <div className="section-title"> <ClipboardList size={22}  /> Pending Attendance Update Requests</div>
+      <div className="section-title">
+        <span className="section-title-left">
+          <ClipboardList size={22} />
+          <span>Pending Attendance Update Requests</span>
+        </span>
+      </div>
 
       <div className="requests-list">
         {allRequests.map(req => (

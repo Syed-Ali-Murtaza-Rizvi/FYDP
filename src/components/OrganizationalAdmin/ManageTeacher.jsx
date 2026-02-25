@@ -169,7 +169,10 @@ const ManageTeachers = ({ programs = [], years = [] }) => {
     <div className="content-box">
 
       <div className="section-title">
-        <BookOpen size={20} /> Manage Teachers
+        <span className="section-title-left">
+          <BookOpen size={20} />
+          <span>Manage Teachers</span>
+        </span>
         <span className="badge">{teachers.length} Total</span>
       </div>
 

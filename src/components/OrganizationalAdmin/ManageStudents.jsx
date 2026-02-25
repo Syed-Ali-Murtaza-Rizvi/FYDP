@@ -153,7 +153,10 @@ const ManageStudents = ({ years, programs, onRegister }) => {
 
       {/* HEADER */}
       <div className="section-title">
-        <GraduationCap size={20} /> Manage Students
+        <span className="section-title-left">
+          <GraduationCap size={20} />
+          <span>Manage Students</span>
+        </span>
         <span className="badge">{allStudents.length} Total Students</span>
       </div>
 

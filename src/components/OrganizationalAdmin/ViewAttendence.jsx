@@ -17,7 +17,12 @@ const ViewAttendance = ({ years, batches, programs, courses, records }) => {
 
   return (
     <div className="content-box">
-      <div className="section-title"> <Eye size={20} />View Student Attendance</div>
+      <div className="section-title">
+        <span className="section-title-left">
+          <Eye size={20} />
+          <span>View Student Attendance</span>
+        </span>
+      </div>
 
       <div className="sub-tabs">
        <div className="ind"> <button className={subTab==="individual"?"active":""} onClick={()=>setSubTab("individual")}>Individual Student Search</button></div>
