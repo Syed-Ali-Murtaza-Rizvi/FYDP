@@ -1,5 +1,6 @@
 // src/components/admin/AttendanceRequests.jsx
 import React, { useState, useEffect } from "react";
+import { ClipboardList } from "lucide-react";
 import AddAttendanceModal from "./AddAttendenceModal";
 
 const AttendanceRequests = ({ requests = [] }) => {
@@ -24,7 +25,7 @@ const AttendanceRequests = ({ requests = [] }) => {
   if (!allRequests.length) {
     return (
       <div className="content-box">
-        <div className="section-title">📋 Pending Attendance Update Requests</div>
+        <div className="section-title"> Pending Attendance Update Requests</div>
         <p style={{ padding: "10px", color: "#777" }}>No attendance update requests yet.</p>
       </div>
     );
@@ -32,7 +33,7 @@ const AttendanceRequests = ({ requests = [] }) => {
 
   return (
     <div className="content-box">
-      <div className="section-title">📋 Pending Attendance Update Requests</div>
+      <div className="section-title"> <ClipboardList size={22}  /> Pending Attendance Update Requests</div>
 
       <div className="requests-list">
         {allRequests.map(req => (

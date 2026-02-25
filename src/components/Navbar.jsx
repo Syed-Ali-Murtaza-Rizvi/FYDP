@@ -41,7 +41,7 @@ const Navbar = () => {
             {!isLoginPage && (
               <Link
                 to="/login"
-                className="px-4 py-2 rounded border border-[#3f6fb6] text-[#3f6fb6] hover:bg-[#2f5fa7] hover:text-white hover:border-[#2f5fa7]"
+                className="px-4 py-2 rounded border border-[#2c4d82] text-[#2c4d82] hover:bg-[#2f5fa7] hover:text-white hover:border-[#2f5fa7]"
               >
                 Login
               </Link>
@@ -49,7 +49,7 @@ const Navbar = () => {
             {!isSignupPage && (
               <Link
                 to="/signup"
-                className="px-4 py-2 rounded bg-[#3f6fb6] hover:bg-[#2f5fa7] text-white"
+                className="px-4 py-2 rounded bg-[#2c4d82] hover:bg-[#2f5fa7] text-white"
               >
                 Sign Up
               </Link>

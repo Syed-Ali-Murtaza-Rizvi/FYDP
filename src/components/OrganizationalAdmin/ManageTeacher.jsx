@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { BookOpen } from "lucide-react";
 import "../../styles/admin.css";
 
 const ManageTeachers = ({ programs = [], years = [] }) => {
@@ -168,7 +169,7 @@ const ManageTeachers = ({ programs = [], years = [] }) => {
     <div className="content-box">
 
       <div className="section-title">
-        👩‍🏫 Manage Teachers
+        <BookOpen size={20} /> Manage Teachers
         <span className="badge">{teachers.length} Total</span>
       </div>
 

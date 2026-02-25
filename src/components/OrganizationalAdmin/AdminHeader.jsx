@@ -1,11 +1,14 @@
 // src/components/admin/AdminHeader.jsx
 import React from "react";
+import {
+  User
+} from "lucide-react";
 
 const AdminHeader = ({ tab, setTab }) => {
   return (
     <div className="admin-header">
       <div className="admin-left">
-        <div className="admin-icon">👤
+        <div className="admin-icon"> <User size={18} color="#6b7c93" />
 </div>
         <div>
           <h2>Admin Dashboard</h2>

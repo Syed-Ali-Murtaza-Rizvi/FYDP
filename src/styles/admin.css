@@ -97,19 +97,18 @@ body{
   box-shadow: 0 6px 18px rgba(0,0,0,0.03);
 }
 
-/* section title bar */
+/*section title bar*/
 .section-title {
   display:flex;
-  align-items:center;
   justify-content: space-between;
-  gap:10px;
+  gap:1px;
   background: var(--maroon);
   color:#fff;
   padding:10px 14px;
   border-radius:8px;
   font-weight:700;
   margin-bottom:14px;
-  width:max-content;
+  /* width:max-content; */
   width: 100%;
 }
 

@@ -8,7 +8,7 @@ const Users = () => {
     <div className="table-container">
       <div className="table-header">
         <h3>Current Users</h3>
-        <button className="primary-btn">+ Add User</button>
+        {/* <button className="primary-btn">+ Add User</button> */}
       </div>
 
       <table>

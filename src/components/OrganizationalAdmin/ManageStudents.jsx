@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { GraduationCap } from "lucide-react";
 import "../../styles/admin.css";
 
 const ManageStudents = ({ years, programs, onRegister }) => {
@@ -152,7 +153,7 @@ const ManageStudents = ({ years, programs, onRegister }) => {
 
       {/* HEADER */}
       <div className="section-title">
-        🧑‍🎓 Manage Students
+        <GraduationCap size={20} /> Manage Students
         <span className="badge">{allStudents.length} Total Students</span>
       </div>
 

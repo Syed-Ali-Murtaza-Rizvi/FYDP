@@ -5,7 +5,7 @@
 body {
   margin: 0;
   font-family: "Segoe UI", sans-serif;
-  background: #f5f6fa;
+  
 }
 
 
@@ -29,6 +29,9 @@ body {
      color: #122038;
      font-weight: 700;
      font-size: 30px;
+}
+.mainn p{
+  font-weight: 500;
 }
 
 /* ============================= */
@@ -114,9 +117,90 @@ body {
 .table-header h3,
 .heading1 h3 {
   margin: 0;
-  color: #8b0000;
-  font-weight:600;
+  color: #122038;
+  font-weight:700;
   font-size: larger;
+}
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* Modal Box */
+.modal {
+  background: white;
+  width: 500px;
+  padding: 25px;
+  border-radius: 14px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+  animation: scaleIn 0.25s ease;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.modal-header button {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.form-grid {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.form-grid input,
+.form-grid select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn-cancel {
+  background: #eee;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-create {
+  background: linear-gradient(135deg, #2c4d82, #5f8dd3);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
 /* ============================= */
@@ -125,7 +209,7 @@ body {
 
 .primary-btn,
 .btn {
-  background-color: #8b0000;
+  background: linear-gradient(135deg, #2c4d82, #5f8dd3);
   color: white;
   border: none;
   padding: 8px 16px;
@@ -136,7 +220,7 @@ body {
 
 .primary-btn:hover,
 .btn:hover {
-  background-color: #a00000;
+  background-color: #6b7c93;
 } 
 
 /* Online */
@@ -327,20 +411,20 @@ td button:hover {
 }
   
 .card {
+  position: relative;   /* VERY IMPORTANT */
+  overflow: hidden;     /* keeps ::before inside rounded corners */
+
   backdrop-filter: blur(12px);
-   background: rgba(255, 255, 255, 0.75);
-  border-radius: 10px;
-  padding: 20px;
+  background: rgba(255, 255, 255, 0.75);
+  border-radius: 16px;
+  padding: 24px;
   display: flex;
   align-items: center;
   gap: 25px;
-  box-shadow: 
-    0 10px 30px rgba(0, 0, 0, 0.05),
-    0 4px 10px rgba(44, 77, 130, 0.08);
-  
 
-  /* box-shadow:
-    0 10px 30px rgba(44, 77, 130, 0.12); */
+  box-shadow: 
+    0 8px 20px rgba(0, 0, 0, 0.05),
+    0 2px 8px rgba(44, 77, 130, 0.08);
 
   transition: all 0.3s ease;
   cursor: pointer;
@@ -350,9 +434,17 @@ td button:hover {
   position: absolute;
   top: 0;
   left: 0;
-  height: 5px;
   width: 100%;
-  background: linear-gradient(90deg, #2c4d82, #5f8dd3);
+  height: 4px;
+
+  background: linear-gradient(
+    90deg,
+    #2c4d82,
+    #5f8dd3
+  );
+
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
 }
 .card:hover {
   transform: translateY(-6px);
