@@ -12,8 +12,48 @@ const ViewAttendance = ({ years, batches, programs, courses, records }) => {
   const [selectedCourse, setSelectedCourse] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const [individualResults, setIndividualResults] = useState([]);
+  const [individualSearched, setIndividualSearched] = useState(false);
+  const [individualMessage, setIndividualMessage] = useState("");
 
   const courseRecords = records[selectedCourse] || [];
+
+  const handleIndividualSearch = () => {
+    const rollQuery = roll.trim().toLowerCase();
+    const batchQuery = batch.trim();
+    const programQuery = program.trim();
+
+    if (!rollQuery && (!batchQuery || !programQuery)) {
+      setIndividualResults([]);
+      setIndividualSearched(true);
+      setIndividualMessage("Enter a roll number, or select both batch and program.");
+      return;
+    }
+
+    const flattened = Object.entries(records || {}).flatMap(([courseCode, students]) => {
+      const safeStudents = Array.isArray(students) ? students : [];
+      const courseName = courses?.find((c) => c.code === courseCode)?.name;
+      return safeStudents.map((s) => ({
+        ...s,
+        courseCode,
+        courseName,
+      }));
+    });
+
+    const filtered = flattened.filter((s) => {
+      if (rollQuery) {
+        return String(s.roll ?? "").toLowerCase().includes(rollQuery);
+      }
+
+      const matchesBatch = String(s.batch ?? "") === batchQuery;
+      const matchesProgram = String(s.program ?? "") === programQuery;
+      return matchesBatch && matchesProgram;
+    });
+
+    setIndividualResults(filtered);
+    setIndividualSearched(true);
+    setIndividualMessage("");
+  };
 
   return (
     <div className="content-box">
@@ -34,12 +74,56 @@ const ViewAttendance = ({ years, batches, programs, courses, records }) => {
         <>
           <div className="filters">
             <input placeholder="Search by roll number" value={roll} onChange={(e)=>setRoll(e.target.value)} />
-            <select value={batch} onChange={(e)=>setBatch(e.target.value)}><option>All batches</option>{batches.map(b=> <option key={b}>{b}</option>)}</select>
-            <select value={program} onChange={(e)=>setProgram(e.target.value)}><option>All programs</option>{programs.map(p=> <option key={p}>{p}</option>)}</select>
-            <button className="primary">Search</button>
+            <select value={batch} onChange={(e)=>setBatch(e.target.value)}>
+              <option value="">All batches</option>
+              {batches.map(b=> <option key={b} value={b}>{b}</option>)}
+            </select>
+            <select value={program} onChange={(e)=>setProgram(e.target.value)}>
+              <option value="">All programs</option>
+              {programs.map(p=> <option key={p} value={p}>{p}</option>)}
+            </select>
+            <button type="button" className="primary" onClick={handleIndividualSearch}>Search</button>
           </div>
 
-          <div className="placeholder">Enter student details and click Search to view attendance records</div>
+          {!individualSearched && (
+            <div className="placeholder">Enter student details and click Search to view attendance records</div>
+          )}
+
+          {individualSearched && individualMessage && (
+            <div className="placeholder">{individualMessage}</div>
+          )}
+
+          {individualSearched && !individualMessage && individualResults.length === 0 && (
+            <div className="placeholder">No attendance records found for the given filters.</div>
+          )}
+
+          {individualSearched && individualResults.length > 0 && (
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Course</th><th>Roll Number</th><th>Name</th><th>Batch</th><th>Program</th><th>Total Classes</th><th>Attended</th><th>Percentage</th>
+                </tr>
+              </thead>
+              <tbody>
+                {individualResults.map((s, idx) => (
+                  <tr key={`${s.courseCode}-${s.roll}-${idx}`}>
+                    <td>{s.courseCode}{s.courseName ? ` - ${s.courseName}` : ""}</td>
+                    <td>{s.roll}</td>
+                    <td>{s.name}</td>
+                    <td>{s.batch}</td>
+                    <td>{s.program}</td>
+                    <td>{s.total}</td>
+                    <td>{s.attended}</td>
+                    <td>
+                      <span className={s.percent >= 85 ? "green-badge" : s.percent >= 75 ? "yellow-badge" : "red-badge"}>
+                        {s.percent}%
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </>
       )}
 

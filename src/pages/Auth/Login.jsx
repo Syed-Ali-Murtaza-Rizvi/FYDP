@@ -81,19 +81,6 @@ const Login = () => {
           })
         );
 
-        // Store teacher in expected format for dashboard
-        localStorage.setItem(
-          "teachers",
-          JSON.stringify([
-            {
-              id: teacher.profile.teacherId,
-              name: teacher.profile.name,
-              dept: teacher.profile.department,
-              courses: teacher.profile.coursesTeaching.join(","),
-            },
-          ])
-        );
-
         navigate("/teacher");
         return;
       }

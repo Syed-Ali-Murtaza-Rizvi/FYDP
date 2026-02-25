@@ -175,6 +175,7 @@ body{
   display:grid;
   grid-template-columns: repeat(2, 1fr);
   gap:12px;
+  margin-bottom: 10px;
 }
 .grid-2 input,
 .grid-2 select {
@@ -366,6 +367,18 @@ input, select, textarea {
   color: white;
 }
 
+.teacher-search-table th {
+  background-color: #3f6fb6;
+}
+
+.student-search-table th {
+  background-color: #3f6fb6;
+}
+
 .simple-table tr:nth-child(even) {
   background-color: #f9f9f9;
+}
+
+.heading-bold {
+  font-weight: 800;
 }

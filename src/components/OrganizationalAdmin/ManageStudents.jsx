@@ -261,7 +261,7 @@ const ManageStudents = ({ years, programs, onRegister }) => {
           {filteredStudents.length === 0 ? (
             <p>No students found for selected filters.</p>
           ) : (
-            <table className="simple-table">
+            <table className="simple-table student-search-table">
               <thead>
                 <tr>
                   <th>Name</th>

@@ -23,7 +23,7 @@ const adminData = {
 
   studentAttendanceRecords: {
     CS301: [
-      { roll: "2023001", name: "Rahul Sharma", batch: "2023", program: "A", total: 30, attended: 28, percent: 93.3 }
+      { roll: "2023001", name: "Rahul Sharma", batch: "2023", program: "CSIT", total: 30, attended: 28, percent: 93.3 }
     ]
   },
 

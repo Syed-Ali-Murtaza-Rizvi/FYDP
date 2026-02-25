@@ -15,10 +15,100 @@ const ManageTeachers = ({ programs = [], years = [] }) => {
       : programs;
 
   /* ======================
+     HELPERS
+  ====================== */
+  const parseCommaList = (value) => {
+    if (typeof value !== "string") return [];
+    return value.split(",").map(v => v.trim()).filter(Boolean);
+  };
+
+  const parseCourses = (value) => {
+    if (typeof value !== "string") return [];
+    return value
+      .split(",")
+      .map(c => {
+        const [code, name] = c.split(":").map(s => s.trim());
+        return { code, name: name || "" };
+      })
+      .filter(c => c.code);
+  };
+
+  const normalizeTeacher = (t) => {
+    if (!t || typeof t !== "object") return null;
+
+    // Seed format from TeacherData.js
+    if (t.profile && typeof t.profile === "object") {
+      const teacherId = t.profile.teacherId ?? "";
+      const teacherName = t.profile.name ?? "";
+      const teacherDepartment = t.profile.department ?? t.department ?? t.dept ?? "N/A";
+      const teacherYears = Array.isArray(t.years)
+        ? t.years
+        : Array.isArray(t.batches)
+          ? t.batches
+          : [];
+      const teacherPrograms = Array.isArray(t.programs) ? t.programs : [];
+      const teacherCourses = Array.isArray(t.courses)
+        ? t.courses
+        : Array.isArray(t.profile.coursesTeaching)
+          ? t.profile.coursesTeaching.map(code => ({ code, name: "" }))
+          : [];
+
+      return {
+        id: teacherId,
+        name: teacherName,
+        email: t.profile.email ?? t.email ?? "",
+        phone: t.profile.phone ?? t.phone ?? "",
+        years: teacherYears,
+        programs: teacherPrograms,
+        department: teacherDepartment,
+        courses: teacherCourses,
+        password: t.profile.password ?? t.password,
+      };
+    }
+
+    // Flat format used by ManageTeachers register UI (or legacy login code)
+    const normalizedYears = Array.isArray(t.years)
+      ? t.years
+      : Array.isArray(t.batches)
+        ? t.batches
+        : parseCommaList(t.years);
+    const normalizedPrograms = Array.isArray(t.programs)
+      ? t.programs
+      : parseCommaList(t.programs);
+    const normalizedCourses = Array.isArray(t.courses)
+      ? t.courses
+      : typeof t.courses === "string"
+        ? t.courses
+            .split(",")
+            .map(code => ({ code: code.trim(), name: "" }))
+            .filter(c => c.code)
+        : [];
+
+    return {
+      id: t.id ?? t.teacherId ?? "",
+      name: t.name ?? "",
+      email: t.email ?? "",
+      phone: t.phone ?? "",
+      years: normalizedYears,
+      programs: normalizedPrograms,
+      department: t.department ?? t.dept ?? "N/A",
+      courses: normalizedCourses,
+      password: t.password,
+    };
+  };
+
+  /* ======================
      LOCAL STORAGE
   ====================== */
-  const getTeachers = () =>
-    JSON.parse(localStorage.getItem("teachers")) || [];
+  const getTeachers = () => {
+    try {
+      const parsed = JSON.parse(localStorage.getItem("teachers"));
+      const list = Array.isArray(parsed) ? parsed : [];
+      return list.map(normalizeTeacher).filter(Boolean);
+    } catch {
+      return [];
+    }
+  };
 
   const [teachers, setTeachers] = useState(getTeachers());
 
@@ -50,18 +140,6 @@ const ManageTeachers = ({ programs = [], years = [] }) => {
     id: "",
     courses: ""
   });
-
-  /* ======================
-     HELPERS
-  ====================== */
-  const parseCommaList = (value) =>
-    value.split(",").map(v => v.trim()).filter(Boolean);
-
-  const parseCourses = (value) =>
-    value.split(",").map(c => {
-      const [code, name] = c.split(":").map(s => s.trim());
-      return { code, name };
-    });
 
   /* ======================
      HANDLERS
@@ -123,6 +201,8 @@ const ManageTeachers = ({ programs = [], years = [] }) => {
 
     const result = teachers.filter(
       t =>
+        Array.isArray(t.years) &&
+        Array.isArray(t.programs) &&
         t.years.includes(filterYear) &&
         t.programs.includes(filterProgram)
     );
@@ -139,7 +219,19 @@ const ManageTeachers = ({ programs = [], years = [] }) => {
     const updated = teachers.filter(t => t.id !== id);
     localStorage.setItem("teachers", JSON.stringify(updated));
     setTeachers(updated);
-    setFilteredTeachers(updated);
+
+    if (filterYear && filterProgram) {
+      const refreshed = updated.filter(
+        t =>
+          Array.isArray(t.years) &&
+          Array.isArray(t.programs) &&
+          t.years.includes(filterYear) &&
+          t.programs.includes(filterProgram)
+      );
+      setFilteredTeachers(refreshed);
+    } else {
+      setFilteredTeachers([]);
+    }
   };
 
   /* ======================
@@ -215,18 +307,18 @@ const ManageTeachers = ({ programs = [], years = [] }) => {
 
       {/* SEARCH */}
       <div className="card-inner small">
-        <h4>Search Teachers</h4>
+        <h4 className="heading-bold">Search Teachers</h4>
 
         <div className="filters-inline">
           <select value={filterYear} onChange={e => setFilterYear(e.target.value)}>
             <option value="">Select Year</option>
-            {years.map(y => <option key={y}>{y}</option>)}
+            {years.map(y => <option key={y} value={y}>{y}</option>)}
           </select>
 
           {/* ✅ ADMIN PROGRAMS ONLY */}
           <select value={filterProgram} onChange={e => setFilterProgram(e.target.value)}>
             <option value="">Select Program</option>
-            {adminPrograms.map(p => <option key={p}>{p}</option>)}
+            {adminPrograms.map(p => <option key={p} value={p}>{p}</option>)}
           </select>
 
           <button className="primary-outline" onClick={handleSearch}>
@@ -239,7 +331,7 @@ const ManageTeachers = ({ programs = [], years = [] }) => {
           {filteredTeachers.length === 0 ? (
             <p>No teachers found.</p>
           ) : (
-            <table className="simple-table">
+            <table className="simple-table teacher-search-table">
               <thead>
                 <tr>
                   <th>Name</th>
