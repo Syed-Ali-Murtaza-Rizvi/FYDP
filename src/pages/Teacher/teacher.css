@@ -19,6 +19,16 @@
   .teacher-page {
     padding: 20px;
   }
+
+  .teacher-wrapper {
+    grid-template-columns: 1fr;
+    width: 100%;
+    gap: 20px;
+  }
+
+  .right-section {
+    gap: 20px;
+  }
 }
 
 .profile-card {
@@ -86,6 +96,17 @@
   box-shadow: 0 10px 25px rgba(0,0,0,0.1);
   padding-bottom: 20px;
   border: 1px solid #ddd;
+}
+
+/* Prevent global `.card:hover` transforms (from other dashboards) from affecting Teacher cards */
+.teacher-page .card {
+  cursor: default;
+  transition: box-shadow 0.3s ease;
+}
+
+.teacher-page .card:hover {
+  transform: none;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
 }
 
 /* Ensure other pages' global .card styles (e.g. orgAdmin) don't break this layout */
@@ -316,6 +337,7 @@
 .modal-box {
   background: white;
   width: 450px;
+  max-width: calc(100% - 32px);
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 2px 15px rgba(0,0,0,0.2);
@@ -422,6 +444,7 @@
 
 .teacher-card {
   width: 350px;
+  max-width: 100%;
   background: white;
   border-radius: 20px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.1);
@@ -472,5 +495,57 @@
 
 .teacher-details li {
   margin-bottom: 10px;
+}
+
+@media (max-width: 600px) {
+  .teacher-page {
+    padding: 12px;
+    overflow-x: hidden;
+    overflow-x: hidden;
+  }
+
+  .welcome-banner{
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    font-size: 16px;
+  }
+
+  .top-actions{
+    justify-content: stretch;
+  }
+
+  .top-actions .update-btn{
+    width: 100%;
+  }
+
+  .teacher-card{
+    width: 100%;
+    margin: 0 auto;
+    height: auto;
+  }
+
+  .teacher-name{
+    font-size: 20px;
+  }
+
+  .teacher-details{
+    width: 90%;
+  }
+
+  .card-title{
+    padding: 12px 14px;
+    font-size: 16px;
+  }
+
+  .card-content{
+    padding: 16px;
+  }
+
+  .stop-btn{
+    width: 100%;
+    margin: 20px 0 0;
+  }
 }
 

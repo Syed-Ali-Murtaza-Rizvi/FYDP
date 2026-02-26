@@ -1,8 +1,71 @@
 // src/components/admin/ViewAttendance.jsx
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Eye } from "lucide-react";
 import AddAttendanceModal from "./AddAttendenceModal";
 
+
+const normalizeCourseCode = (value) => {
+  const text = String(value ?? "").trim();
+  if (!text) return "";
+  return text.split("-")[0].trim().split(" ")[0].trim();
+};
+
+const toNumber = (value) => {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : 0;
+};
+
+const normalizeRow = (row, courseCode) => {
+  const roll = String(
+    row?.roll ?? row?.id ?? row?.studentId ?? row?.studentRoll ?? ""
+  ).trim();
+  const name = String(row?.name ?? row?.studentName ?? "").trim();
+  const batch = String(row?.batch ?? row?.year ?? "").trim();
+  const program = String(row?.program ?? row?.dept ?? row?.department ?? "").trim();
+  const total = toNumber(row?.total ?? row?.totalClasses);
+  const attended = toNumber(row?.attended ?? row?.present);
+  const computedPercent = total > 0 ? Math.round((attended / total) * 1000) / 10 : 0;
+  const percent = Number.isFinite(Number(row?.percent)) ? Number(row?.percent) : computedPercent;
+
+  return {
+    ...row,
+    courseCode,
+    roll,
+    name,
+    batch,
+    program,
+    total,
+    attended,
+    percent,
+  };
+};
+
+const normalizeRecords = (rawRecords) => {
+  if (!rawRecords) return {};
+
+  // Array shape: [{ courseCode, roll, ... }, ...]
+  if (Array.isArray(rawRecords)) {
+    return rawRecords.reduce((acc, row) => {
+      const courseCode = normalizeCourseCode(row?.courseCode ?? row?.course ?? row?.code);
+      if (!courseCode) return acc;
+      acc[courseCode] ??= [];
+      acc[courseCode].push(normalizeRow(row, courseCode));
+      return acc;
+    }, {});
+  }
+
+  // Object shape: { CS301: [...rows] } or { CS301: row }
+  if (typeof rawRecords === "object") {
+    return Object.entries(rawRecords).reduce((acc, [key, value]) => {
+      const courseCode = normalizeCourseCode(key);
+      const rows = Array.isArray(value) ? value : value ? [value] : [];
+      acc[courseCode] = rows.map((r) => normalizeRow(r, courseCode));
+      return acc;
+    }, {});
+  }
+
+  return {};
+};
 
 const ViewAttendance = ({ years, batches, programs, courses, records }) => {
   const [subTab, setSubTab] = useState("individual"); // or "coursewise"
@@ -10,13 +73,26 @@ const ViewAttendance = ({ years, batches, programs, courses, records }) => {
   const [batch, setBatch] = useState("");
   const [program, setProgram] = useState("");
   const [selectedCourse, setSelectedCourse] = useState("");
+  const [coursewiseViewed, setCoursewiseViewed] = useState(false);
+  const [coursewiseMessage, setCoursewiseMessage] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [individualResults, setIndividualResults] = useState([]);
   const [individualSearched, setIndividualSearched] = useState(false);
   const [individualMessage, setIndividualMessage] = useState("");
 
-  const courseRecords = records[selectedCourse] || [];
+  const recordsByCourse = useMemo(() => {
+    let fromStorage = null;
+    try {
+      const stored = localStorage.getItem("studentAttendanceRecords");
+      if (stored) fromStorage = JSON.parse(stored);
+    } catch {}
+
+    return normalizeRecords(fromStorage ?? records);
+  }, [records]);
+
+  const selectedCourseCode = normalizeCourseCode(selectedCourse);
+  const courseRecords = recordsByCourse[selectedCourseCode] || [];
 
   const handleIndividualSearch = () => {
     const rollQuery = roll.trim().toLowerCase();
@@ -30,7 +106,7 @@ const ViewAttendance = ({ years, batches, programs, courses, records }) => {
       return;
     }
 
-    const flattened = Object.entries(records || {}).flatMap(([courseCode, students]) => {
+    const flattened = Object.entries(recordsByCourse || {}).flatMap(([courseCode, students]) => {
       const safeStudents = Array.isArray(students) ? students : [];
       const courseName = courses?.find((c) => c.code === courseCode)?.name;
       return safeStudents.map((s) => ({
@@ -42,11 +118,11 @@ const ViewAttendance = ({ years, batches, programs, courses, records }) => {
 
     const filtered = flattened.filter((s) => {
       if (rollQuery) {
-        return String(s.roll ?? "").toLowerCase().includes(rollQuery);
+        return String(s.roll ?? s.id ?? s.studentId ?? "").toLowerCase().includes(rollQuery);
       }
 
-      const matchesBatch = String(s.batch ?? "") === batchQuery;
-      const matchesProgram = String(s.program ?? "") === programQuery;
+      const matchesBatch = String(s.batch ?? s.year ?? "") === batchQuery;
+      const matchesProgram = String(s.program ?? s.dept ?? s.department ?? "") === programQuery;
       return matchesBatch && matchesProgram;
     });
 
@@ -98,31 +174,33 @@ const ViewAttendance = ({ years, batches, programs, courses, records }) => {
           )}
 
           {individualSearched && individualResults.length > 0 && (
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Course</th><th>Roll Number</th><th>Name</th><th>Batch</th><th>Program</th><th>Total Classes</th><th>Attended</th><th>Percentage</th>
-                </tr>
-              </thead>
-              <tbody>
-                {individualResults.map((s, idx) => (
-                  <tr key={`${s.courseCode}-${s.roll}-${idx}`}>
-                    <td>{s.courseCode}{s.courseName ? ` - ${s.courseName}` : ""}</td>
-                    <td>{s.roll}</td>
-                    <td>{s.name}</td>
-                    <td>{s.batch}</td>
-                    <td>{s.program}</td>
-                    <td>{s.total}</td>
-                    <td>{s.attended}</td>
-                    <td>
-                      <span className={s.percent >= 85 ? "green-badge" : s.percent >= 75 ? "yellow-badge" : "red-badge"}>
-                        {s.percent}%
-                      </span>
-                    </td>
+            <div className="table-scroll">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Course</th><th>Roll Number</th><th>Name</th><th>Batch</th><th>Program</th><th>Total Classes</th><th>Attended</th><th>Percentage</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {individualResults.map((s, idx) => (
+                    <tr key={`${s.courseCode}-${s.roll}-${idx}`}>
+                      <td>{s.courseCode}{s.courseName ? ` - ${s.courseName}` : ""}</td>
+                      <td>{s.roll}</td>
+                      <td>{s.name}</td>
+                      <td>{s.batch}</td>
+                      <td>{s.program}</td>
+                      <td>{s.total}</td>
+                      <td>{s.attended}</td>
+                      <td>
+                        <span className={s.percent >= 85 ? "green-badge" : s.percent >= 75 ? "yellow-badge" : "red-badge"}>
+                          {s.percent}%
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </>
       )}
@@ -134,32 +212,58 @@ const ViewAttendance = ({ years, batches, programs, courses, records }) => {
               <option value="">Select course</option>
               {courses.map(c => <option key={c.code} value={c.code}>{c.code} - {c.name}</option>)}
             </select>
-            <button className="primary" onClick={() => { /* no-op demo */ }}>View Attendance</button>
+            <button
+              className="primary"
+              type="button"
+              onClick={() => {
+                setCoursewiseViewed(true);
+                if (!selectedCourseCode) {
+                  setCoursewiseMessage("Select a course to view attendance.");
+                  return;
+                }
+
+                if ((recordsByCourse[selectedCourseCode] || []).length === 0) {
+                  setCoursewiseMessage("No attendance records found for this course.");
+                  return;
+                }
+
+                setCoursewiseMessage("");
+              }}
+            >
+              View Attendance
+            </button>
           </div>
 
-          <h4 className="course-heading">Showing attendance for: {selectedCourse ? selectedCourse + " - " + courses.find(x=>x.code===selectedCourse)?.name : "—"}</h4>
+          <h4 className="course-heading">Showing attendance for: {selectedCourseCode ? selectedCourseCode + " - " + courses.find(x=>x.code===selectedCourseCode)?.name : "—"}</h4>
 
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Roll Number</th><th>Name</th><th>Batch</th><th>Program</th><th>Total Classes</th><th>Attended</th><th>Percentage</th><th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {courseRecords.map(s => (
-                <tr key={s.roll}>
-                  <td>{s.roll}</td>
-                  <td>{s.name}</td>
-                  <td>{s.batch}</td>
-                  <td>{s.program}</td>
-                  <td>{s.total}</td>
-                  <td>{s.attended}</td>
-                  <td><span className={s.percent >= 85 ? "green-badge" : s.percent >= 75 ? "yellow-badge" : "red-badge"}>{s.percent}%</span></td>
-                  <td><button className="add-btn" onClick={() => { setSelectedStudent(s); setShowAddModal(true); }}>Add</button></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {coursewiseViewed && coursewiseMessage && (
+            <div className="placeholder">{coursewiseMessage}</div>
+          )}
+
+          {coursewiseViewed && !coursewiseMessage && selectedCourseCode && (
+            <div className="table-scroll">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Roll Number</th><th>Name</th><th>Batch</th><th>Program</th><th>Total Classes</th><th>Attended</th><th>Percentage</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {courseRecords.map((s, idx) => (
+                    <tr key={`${s.roll || "row"}-${idx}`}>
+                      <td>{s.roll}</td>
+                      <td>{s.name}</td>
+                      <td>{s.batch}</td>
+                      <td>{s.program}</td>
+                      <td>{s.total}</td>
+                      <td>{s.attended}</td>
+                      <td><span className={s.percent >= 85 ? "green-badge" : s.percent >= 75 ? "yellow-badge" : "red-badge"}>{s.percent}%</span></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </>
       )}
 
