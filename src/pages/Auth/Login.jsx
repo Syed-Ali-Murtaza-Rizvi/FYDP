@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import teacherData from "../../data/TeacherData";
 import adminData from "../../data/AdminData";
 import "./Login.css";
+import loginImage from "../../assets/login_Image.png";
 
 const Login = () => {
   const [data, setData] = useState({
@@ -121,57 +122,72 @@ const Login = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-[80vh] p-4">
-      <div className="max-w-md w-full mx-auto border border-gray-300 rounded-2xl p-8 bg-white">
-        <div className="text-[#2f5fa7] text-center mb-6 text-4xl font-semibold">
-          Login
+    <div className="login-page">
+      <div className="login-card">
+        <div className="login-card-left">
+          <div className="login-left-inner">
+            <div className="login-heading">Login</div>
+
+            <form className="login-form" onSubmit={handleSubmit}>
+              <label className="login-label" htmlFor="login-email">
+                Email
+              </label>
+              <input
+                id="login-email"
+                type="email"
+                name="email"
+                value={data.email}
+                onChange={handleOnChange}
+                required
+                className="login-input"
+              />
+
+              <label className="login-label" htmlFor="login-password">
+                Password
+              </label>
+              <input
+                id="login-password"
+                type="password"
+                name="password"
+                value={data.password}
+                onChange={handleOnChange}
+                required
+                className="login-input"
+              />
+
+              <label className="login-label" htmlFor="login-role">
+                Login as
+              </label>
+              <select
+                id="login-role"
+                name="role"
+                value={data.role}
+                onChange={handleOnChange}
+                className="login-input"
+              >
+                <option value="student">Student</option>
+                <option value="teacher">Teacher</option>
+                <option value="orgadmin">Organization Admin</option>
+                <option value="advisor">Event Admin</option>
+                <option value="participant">Participant</option>
+              </select>
+
+              <button className="login-button" type="submit">
+                Login
+              </button>
+
+              <div className="login-forgot-wrap">
+                <Link to="/forgot-password" className="login-forgot">
+                  Forgot Password?
+                </Link>
+              </div>
+            </form>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          <label className="block text-[#2f5fa7] text-sm">Email</label>
-          <input
-            type="email"
-            name="email"
-            value={data.email}
-            onChange={handleOnChange}
-            required
-            className="w-full border px-4 py-2 rounded mb-3"
-          />
-
-          <label className="block text-[#2f5fa7] text-sm">Password</label>
-          <input
-            type="password"
-            name="password"
-            value={data.password}
-            onChange={handleOnChange}
-            required
-            className="w-full border px-4 py-2 rounded mb-3"
-          />
-
-          <label className="block text-[#2f5fa7] text-sm">Login as</label>
-          <select
-            name="role"
-            value={data.role}
-            onChange={handleOnChange}
-            className="w-full border px-4 py-2 rounded mb-4"
-          >
-            <option value="student">Student</option>
-            <option value="teacher">Teacher</option>
-            <option value="orgadmin">Organization Admin</option>
-            <option value="advisor">Event Admin</option>
-            <option value="participant">Participant</option>
-          </select>
-
-          <button className="w-full bg-[#3f6fb6] hover:bg-[#2f5fa7] text-white py-2 rounded">
-            Login
-          </button>
-
-          <div className="text-center mt-3">
-            <Link to="/forgot-password" className="text-[#2f5fa7] text-sm">
-              Forgot Password?
-            </Link>
-          </div>
-        </form>
+        <div className="login-card-right" aria-hidden="true">
+          <img className="login-image" src={loginImage} alt="" />
+        </div>
       </div>
     </div>
   );
