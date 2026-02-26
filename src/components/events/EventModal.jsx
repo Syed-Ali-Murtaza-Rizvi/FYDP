@@ -17,13 +17,13 @@ export default function EventModal({ event, onClose }) {
         </div>
 
         <div className="modal-tabs">
-          <div className={`tab ${tab === "details" ? "active" : ""}`} onClick={() => setTab("details")}>
+          <div className={`event-modal-tab ${tab === "details" ? "active" : ""}`} onClick={() => setTab("details")}>
             Details &amp; QR
           </div>
-          <div className={`tab ${tab === "participants" ? "active" : ""}`} onClick={() => setTab("participants")}>
+          <div className={`event-modal-tab ${tab === "participants" ? "active" : ""}`} onClick={() => setTab("participants")}>
             Participants ({event.participants?.length || 0})
           </div>
-          <div className={`tab ${tab === "attendance" ? "active" : ""}`} onClick={() => setTab("attendance")}>
+          <div className={`event-modal-tab ${tab === "attendance" ? "active" : ""}`} onClick={() => setTab("attendance")}>
             Attendance ({event.attendance?.length || 0})
           </div>
         </div>
@@ -59,44 +59,48 @@ export default function EventModal({ event, onClose }) {
 
             {tab === "participants" && (
               <>
-                <table className="participants-table">
-                  <thead>
-                    <tr><th>Photo</th><th>Name</th><th>Email</th><th>Phone</th><th>Age</th></tr>
-                  </thead>
-                  <tbody>
-                    {event.participants?.map(p => (
-                      <tr key={p.id}>
-                        <td><User size={23} color="#2c4d82" strokeWidth={2.5} /></td>
-                        <td>{p.name}</td>
-                        <td>{p.email}</td>
-                        <td>{p.phone}</td>
-                        <td>{p.age}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <div className="table-scroll">
+                  <table className="participants-table">
+                    <thead>
+                      <tr><th>Photo</th><th>Name</th><th>Email</th><th>Phone</th><th>Age</th></tr>
+                    </thead>
+                    <tbody>
+                      {event.participants?.map(p => (
+                        <tr key={p.id}>
+                          <td><User size={23} color="#2c4d82" strokeWidth={2.5} /></td>
+                          <td>{p.name}</td>
+                          <td>{p.email}</td>
+                          <td>{p.phone}</td>
+                          <td>{p.age}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </>
             )}
 
             {tab === "attendance" && (
               <>
-                <table className="participants-table">
-                  <thead>
-                    <tr><th>Name</th><th>Status</th><th>Time</th></tr>
-                  </thead>
-                  <tbody>
-                    {event.attendance?.map((a, idx) => {
-                      const part = event.participants?.find(p => p.id === a.id) || { name: "Unknown" };
-                      return (
-                        <tr key={idx}>
-                          <td>{part.name}</td>
-                          <td style={{ color: a.status === "present" ? "green" : "red" }}>{a.status}</td>
-                          <td>{a.time}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                <div className="table-scroll">
+                  <table className="participants-table">
+                    <thead>
+                      <tr><th>Name</th><th>Status</th><th>Time</th></tr>
+                    </thead>
+                    <tbody>
+                      {event.attendance?.map((a, idx) => {
+                        const part = event.participants?.find(p => p.id === a.id) || { name: "Unknown" };
+                        return (
+                          <tr key={idx}>
+                            <td>{part.name}</td>
+                            <td style={{ color: a.status === "present" ? "green" : "red" }}>{a.status}</td>
+                            <td>{a.time}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </>
             )}
           </div>
