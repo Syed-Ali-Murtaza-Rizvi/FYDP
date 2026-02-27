@@ -1,16 +1,18 @@
 import React, { useState } from "react";
-import "../Auth/Signup.css";
+import { Link } from "react-router-dom";
+import { Building2, CalendarDays, User } from "lucide-react";
+import "./Signup.css";
+import signupImage from "../../assets/signup.png"; // your PNG image
+
 const Signup = () => {
-  const [role, setRole] = useState("");
+  const [role, setRole] = useState("admin");
 
   const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
-    university: "",
-    department: "",
-    eventName: "",
-    phone: ""
+    organization: "",
+    society: "",
   });
 
   const handleChange = (e) => {
@@ -18,12 +20,7 @@ const Signup = () => {
   };
 
   const handleSignup = () => {
-    if (!role) {
-      alert("Please select a role");
-      return;
-    }
-
-    if (!form.name || !form.email || !form.password) {
+    if (!form.email || !form.password) {
       alert("Please fill required fields");
       return;
     }
@@ -31,13 +28,12 @@ const Signup = () => {
     const newUser = {
       role,
       ...form,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     };
 
-    // save based on role
     const key =
       role === "admin"
-        ? "admins"
+        ? "orgAdmins"
         : role === "eventAdmin"
         ? "eventAdmins"
         : "participants";
@@ -46,42 +42,84 @@ const Signup = () => {
     existing.push(newUser);
     localStorage.setItem(key, JSON.stringify(existing));
 
-    // save logged-in user
-    localStorage.setItem(
-      "currentUser",
-      JSON.stringify({
-        role,
-        name: form.name,
-        email: form.email
-      })
-    );
-
-    alert(`${role} signup successful`);
+    alert("Signup successful!");
   };
 
   return (
     <div className="signup-page">
-      <div className="signup-card">
-        <h2>Signup</h2>
+      <div className="signup-container">
 
-        {/* ROLE SELECTION */}
-        <label>Select Role</label>
-        <select value={role} onChange={(e) => setRole(e.target.value)}>
-          <option value="">Choose role</option>
-          <option value="admin">University Admin</option>
-          <option value="eventAdmin">Event Admin</option>
-          <option value="participant">Participant</option>
-        </select>
+        {/* LEFT SIDE ROLE MENU */}
+        <div className="signup-sidebar">
+          <br></br>
+          <h3>Sign up</h3>
+          <button
+            className={role === "admin" ? "role active" : "role"}
+            onClick={() => setRole("admin")}
+          >
+            <Building2 size={20} className="role-icon" /> Organization Admin
+          </button>
 
-        {/* COMMON FIELDS */}
-        {role && (
-          <>
-            <input
-              name="name"
-              placeholder="Full Name"
-              value={form.name}
-              onChange={handleChange}
-            />
+          <button
+            className={role === "eventAdmin" ? "role active" : "role"}
+            onClick={() => setRole("eventAdmin")}
+          >
+            <CalendarDays size={20} className="role-icon" /> Event Admin
+          </button>
+
+          <button
+            className={role === "participant" ? "role active" : "role"}
+            onClick={() => setRole("participant")}
+          >
+             <User size={20} className="role-icon" /> Participant
+          </button>
+        </div>
+
+        {/* RIGHT SIDE FORM */}
+        <div className="signup-form-area">
+
+          <div className="form-section">
+            <h2>
+              {role === "admin" && "Sign up as Organization Admin"}
+              {role === "eventAdmin" && "Sign up as Event Admin"}
+              {role === "participant" && "Sign up as Participant"}
+            </h2>
+
+           <p className="login-link">
+          Already have an account?{" "}
+        <Link to="/login" className="login-link-text">
+          Login here
+        </Link>
+        </p>
+
+            {/* ROLE SPECIFIC FIELDS */}
+
+            {role === "admin" && (
+              <input
+                name="organization"
+                placeholder="Organization Name"
+                value={form.organization}
+                onChange={handleChange}
+              />
+            )}
+
+            {role === "eventAdmin" && (
+              <input
+                name="society"
+                placeholder="Society Name"
+                value={form.society}
+                onChange={handleChange}
+              />
+            )}
+
+            {role === "participant" && (
+              <input
+                name="name"
+                placeholder="Full Name"
+                value={form.name}
+                onChange={handleChange}
+              />
+            )}
 
             <input
               name="email"
@@ -91,70 +129,23 @@ const Signup = () => {
             />
 
             <input
-              name="password"
               type="password"
+              name="password"
               placeholder="Password"
               value={form.password}
               onChange={handleChange}
             />
-          </>
-        )}
 
-        {/* UNIVERSITY ADMIN FORM */}
-        {role === "admin" && (
-          <>
-            <input
-              name="university"
-              placeholder="University Name"
-              value={form.university}
-              onChange={handleChange}
-            />
+            <button className="submit-btn" onClick={handleSignup}>
+              Submit
+            </button>
+          </div>
 
-            <input
-              name="department"
-              placeholder="Department"
-              value={form.department}
-              onChange={handleChange}
-            />
-          </>
-        )}
-
-        {/* EVENT ADMIN FORM */}
-        {role === "eventAdmin" && (
-          <>
-            <input
-              name="eventName"
-              placeholder="Event Name"
-              value={form.eventName}
-              onChange={handleChange}
-            />
-
-            <input
-              name="phone"
-              placeholder="Contact Number"
-              value={form.phone}
-              onChange={handleChange}
-            />
-          </>
-        )}
-
-        {/* PARTICIPANT FORM */}
-        {role === "participant" && (
-          <>
-            <input
-              name="phone"
-              placeholder="Phone Number"
-              value={form.phone}
-              onChange={handleChange}
-            />
-          </>
-        )}
-
-        {role && (
-          <button className="primary" onClick={handleSignup}>
-            Signup
-          </button>
-        )}
+          {/* IMAGE SIDE */}
+          <div className="signup-image">
+            <img src={signupImage} alt="signup illustration" />
+          </div>
+        </div>
       </div>
     </div>
   );
