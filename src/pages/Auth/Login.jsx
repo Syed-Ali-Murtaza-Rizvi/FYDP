@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import teacherData from "../../data/TeacherData";
 import adminData from "../../data/AdminData";
-import "./Login1.css";
+import "./login1.css";
 import "./SignUp";
 import loginImage from "../../assets/login_image1 .png";
 
@@ -179,7 +179,7 @@ const Login = () => {
                 Login
               </button>
 
-              <div className="login-forgot-wrap">Don't Have Account        
+              <div className="login-forgot-wrap">Don't Have Account?         
                 <Link to="/SignUp" className="login-forgot">
                   Sign Up
                 </Link>
