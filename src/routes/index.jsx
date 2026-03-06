@@ -8,6 +8,7 @@ import OrganizationalAdminDashboard from '../pages/OrganizationalAdmin/Organizat
 import EventAdminDashboard from '../pages/EventAdminDashboard'
 import Signup from '../pages/Auth/SignUp'
 import AdminDashboard from '../pages/AdminDashboard'
+import ParticipantDashboard from '../pages/Participant/ParticipantDashboard'
 
 
 const RootRedirect = () => {
@@ -35,6 +36,7 @@ const router = createBrowserRouter([
             {path:"eventadmin",element:<EventAdminDashboard/>},
             {path:"signup",element:<Signup/>},
             {path:"orgadmin",element:<OrganizationalAdminDashboard/>},
+            {path:"participant",element:<ParticipantDashboard/>},
             { path: "*", element: <Navigate to="/login" replace /> },
         ]
     },
