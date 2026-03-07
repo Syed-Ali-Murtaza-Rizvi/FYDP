@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import teacherData from "../../data/TeacherData";
 import adminData from "../../data/AdminData";
 import "./login1.css";
@@ -12,6 +13,8 @@ const Login = () => {
     password: "",
     role: "student",
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     document.body.classList.add("login-bg");
@@ -26,10 +29,12 @@ const Login = () => {
   const handleOnChange = (e) => {
     const { name, value } = e.target;
     setData((prev) => ({ ...prev, [name]: value }));
+    setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
     /* =========================
        STUDENT LOGIN
@@ -95,28 +100,44 @@ const Login = () => {
        ADMIN LOGIN
     ========================= */
     if (data.role === "orgadmin") {
-      const admin = adminData.profile;
+      try {
+        setLoading(true);
+        const { data: result } = await axios.post("/api/auth/login/management/", {
+          email: data.email,
+          password: data.password,
+        });
 
-      if (
-        admin.email === data.email &&
-        admin.password === data.password
-      ) {
+        // Fetch full management profile using the returned id and token
+        const { data: profile } = await axios.get(
+          `/api/management/${result.management_id}/`,
+          { headers: { Authorization: `Bearer ${result.access}` } }
+        );
+
         localStorage.setItem(
           "currentUser",
           JSON.stringify({
             role: "orgadmin",
-            id: admin.adminId,
-            name: admin.name,
-            email: admin.email,
-            department: admin.department,
+            email: result.email,
+            token: result.access,
+            refresh: result.refresh,
+            user_type: result.user_type,
+            management_id: result.management_id,
+            management_name: profile.Management_name ?? result.management_name,
           })
         );
 
         navigate("/orgadmin");
-        return;
+      } catch (err) {
+        const result = err.response?.data;
+        if (result) {
+          const messages = Object.values(result).flat().join(" ");
+          setError(messages || "Invalid credentials. Please try again.");
+        } else {
+          setError("Network error. Please check your connection and try again.");
+        }
+      } finally {
+        setLoading(false);
       }
-
-      alert("Invalid admin credentials");
       return;
     }
 
@@ -175,8 +196,13 @@ const Login = () => {
                 <option value="participant">Participant</option>
               </select>
 
-              <button className="login-button" type="submit">
-                Login
+              {error && (
+                <p style={{ color: "red", fontSize: "0.85rem", marginBottom: "0.5rem" }}>
+                  {error}
+                </p>
+              )}
+              <button className="login-button" type="submit" disabled={loading}>
+                {loading ? "Logging in..." : "Login"}
               </button>
 
               <div className="login-forgot-wrap">Don't Have Account?         

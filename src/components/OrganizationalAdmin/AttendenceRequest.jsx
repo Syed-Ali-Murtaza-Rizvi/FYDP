@@ -1,28 +1,35 @@
 // src/components/admin/AttendanceRequests.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import axios from "axios";
 import { ClipboardList } from "lucide-react";
 import AddAttendanceModal from "./AddAttendenceModal";
 
-const AttendanceRequests = ({ requests = [] }) => {
+const AttendanceRequests = ({ requests = [], token, onRefresh }) => {
   const [selected, setSelected] = useState(null);
   const [showReview, setShowReview] = useState(false);
-  const [allRequests, setAllRequests] = useState([]);
+  const [actionLoading, setActionLoading] = useState(false);
 
-  // Load requests from props or localStorage
-  useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("attendanceRequests")) || [];
-    setAllRequests(stored.length ? stored : requests);
-  }, [requests]);
+  const authHeader = { Authorization: `Bearer ${token}` };
 
-  // Handle accept/reject
-  const handleDecision = (id) => {
-    const updated = allRequests.filter(r => r.id !== id);
-    localStorage.setItem("attendanceRequests", JSON.stringify(updated));
-    setAllRequests(updated);
-    setShowReview(false);
+  const handleDecision = async (id, action) => {
+    setActionLoading(true);
+    try {
+      await axios.post(
+        `/api/update-attendance-requests/${id}/${action}/`,
+        {},
+        { headers: authHeader }
+      );
+      setShowReview(false);
+      setSelected(null);
+      onRefresh?.();
+    } catch (err) {
+      alert(`Failed to ${action} request. Please try again.`);
+    } finally {
+      setActionLoading(false);
+    }
   };
 
-  if (!allRequests.length) {
+  if (!requests.length) {
     return (
       <div className="content-box">
         <div className="section-title">
@@ -43,29 +50,26 @@ const AttendanceRequests = ({ requests = [] }) => {
       </div>
 
       <div className="requests-list">
-        {allRequests.map(req => (
+        {requests.map(req => (
           <div className="request-card" key={req.id}>
             <div className="request-left">
-              <div><strong>Teacher</strong><br />{req.teacherName}</div>
-              <div><strong>Teacher ID</strong><br />{req.teacherId}</div>
-              <div><strong>Department</strong><br />{req.department}</div>
-              <div><strong>Batch</strong><br />{req.batch}</div>
-              <div><strong>Program</strong><br />{req.program}</div>
-              <div><strong>Course</strong><br />{req.course}</div>
-              <div><strong>Attendance Type</strong><br />{req.attendanceType}</div>
-              <div><strong>Slots</strong><br />{req.slots}</div>
-              <div><strong>Reason</strong><br /><em>"{req.reason}"</em></div>
-              <div><strong>Status</strong><br />{req.status}</div>
-              <div><strong>Requested At</strong><br />{req.createdAt ? new Date(req.createdAt).toLocaleString() : "N/A"}</div>
+              <div><strong>Teacher</strong><br />{req.teacher_name ?? req.teacherName ?? "N/A"}</div>
+              <div><strong>Teacher ID</strong><br />{req.teacher ?? req.teacherId ?? "N/A"}</div>
+              <div><strong>Department</strong><br />{req.department ?? "N/A"}</div>
+              <div><strong>Batch</strong><br />{req.batch ?? "N/A"}</div>
+              <div><strong>Program</strong><br />{req.program ?? "N/A"}</div>
+              <div><strong>Course</strong><br />{req.course_name ?? req.course ?? "N/A"}</div>
+              <div><strong>Attendance Type</strong><br />{req.attendance_type ?? req.attendanceType ?? "N/A"}</div>
+              <div><strong>Slots</strong><br />{req.slots ?? "N/A"}</div>
+              <div><strong>Reason</strong><br /><em>"{req.reason ?? ""}"</em></div>
+              <div><strong>Status</strong><br />{req.status ?? "N/A"}</div>
+              <div><strong>Requested At</strong><br />{req.created_at ?? req.createdAt ? new Date(req.created_at ?? req.createdAt).toLocaleString() : "N/A"}</div>
             </div>
 
             <div className="request-actions">
               <button
                 className="review-btn"
-                onClick={() => {
-                  setSelected(req);
-                  setShowReview(true);
-                }}
+                onClick={() => { setSelected(req); setShowReview(true); }}
               >
                 Review
               </button>
@@ -74,14 +78,24 @@ const AttendanceRequests = ({ requests = [] }) => {
         ))}
       </div>
 
-      {/* REVIEW MODAL */}
       {showReview && selected && (
         <AddAttendanceModal
-          title={selected.course}
-          request={selected}
-          onClose={() => setShowReview(false)}
-          onAccept={() => handleDecision(selected.id)}
-          onReject={() => handleDecision(selected.id)}
+          title={selected.course_name ?? selected.course}
+          request={{
+            teacherName: selected.teacher_name ?? selected.teacherName ?? "N/A",
+            teacherId: selected.teacher ?? selected.teacherId ?? "N/A",
+            department: selected.department ?? "N/A",
+            batch: selected.batch ?? "N/A",
+            program: selected.program ?? "N/A",
+            course: selected.course_name ?? selected.course ?? "N/A",
+            attendanceType: selected.attendance_type ?? selected.attendanceType ?? "N/A",
+            slots: selected.slots ?? "N/A",
+            reason: selected.reason ?? "",
+          }}
+          onClose={() => { setShowReview(false); setSelected(null); }}
+          onAccept={() => handleDecision(selected.id, "approve")}
+          onReject={() => handleDecision(selected.id, "reject")}
+          loading={actionLoading}
         />
       )}
     </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import adminData from "../../data/AdminData";
 import AdminHeader from "../../components/OrganizationalAdmin/AdminHeader";
 import AttendanceRequests from "../../components/OrganizationalAdmin/AttendenceRequest";
@@ -8,7 +9,6 @@ import ManageTeachers from "../../components/OrganizationalAdmin/ManageTeacher";
 import ViewAttendance from "../../components/OrganizationalAdmin/ViewAttendence";
 import "../../styles/admin.css";
 import "./OrganizationalAdmin.css";
-import { getAttendanceRequests } from "../../data/AttendenceRequest";
 
 const OrganizationalAdminDashboard = () => {
   const navigate = useNavigate();
@@ -22,18 +22,20 @@ const OrganizationalAdminDashboard = () => {
     };
   }, []);
 
-  // ✅ AUTHENTICATION (SAME STYLE AS STUDENT)
+  // ✅ AUTHENTICATION — validate against API session stored in localStorage
   const currentUserStr = localStorage.getItem("currentUser");
   let adminProfile = null;
 
   if (currentUserStr) {
     try {
       const currentUser = JSON.parse(currentUserStr);
-      if (
-        currentUser.role === "orgadmin" &&
-        currentUser.email === adminData.profile.email
-      ) {
-        adminProfile = adminData.profile;
+      if (currentUser.role === "orgadmin" && currentUser.token) {
+        adminProfile = {
+          name: currentUser.management_name,
+          email: currentUser.email,
+          adminId: currentUser.management_id,
+          department: currentUser.department ?? "",
+        };
       }
     } catch {}
   }
@@ -43,40 +45,25 @@ const OrganizationalAdminDashboard = () => {
     if (!adminProfile) navigate("/login");
   }, [adminProfile, navigate]);
 
-  // ✅ Load requests dynamically
-  useEffect(() => {
-    const stored = getAttendanceRequests();
+  // ✅ Fetch attendance requests from API
+  const token = (() => {
+    try { return JSON.parse(localStorage.getItem("currentUser"))?.token; } catch { return null; }
+  })();
 
-    // If nothing is stored yet, seed from AdminData (demo data)
-    if (
-      (!stored || stored.length === 0) &&
-      Array.isArray(adminData.attendanceRequests) &&
-      adminData.attendanceRequests.length > 0
-    ) {
-      const seeded = adminData.attendanceRequests.map((req, index) => ({
-        id: req.id ?? `seed-${index}`,
-        teacherId: req.teacherId ?? "N/A",
-        teacherName: req.teacherName ?? req.teacher ?? "N/A",
-        department: req.department ?? adminData.profile?.department ?? "N/A",
-        batch: req.batch ?? "N/A",
-        program: req.program ?? "N/A",
-        course: req.course ?? "N/A",
-        attendanceType: req.attendanceType ?? "N/A",
-        slots: req.slots ?? 0,
-        reason: req.reason ?? "",
-        status: req.status ?? "Pending",
-        createdAt: req.createdAt ?? req.date ?? new Date().toISOString(),
-      }));
-
-      try {
-        localStorage.setItem("attendanceRequests", JSON.stringify(seeded));
-      } catch (e) {}
-
-      setRequests(seeded);
-      return;
+  const fetchRequests = async () => {
+    if (!token) return;
+    try {
+      const { data } = await axios.get("/api/update-attendance-requests/", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setRequests(Array.isArray(data) ? data : data.results ?? []);
+    } catch (err) {
+      console.error("Failed to fetch attendance requests", err);
     }
+  };
 
-    setRequests(stored);
+  useEffect(() => {
+    if (tab === "requests") fetchRequests();
   }, [tab]);
 
   /* ---------------- REGISTER STUDENT ---------------- */
@@ -139,7 +126,7 @@ const OrganizationalAdminDashboard = () => {
       <AdminHeader tab={tab} setTab={setTab} />
 
       {tab === "requests" && (
-        <AttendanceRequests requests={requests} />
+        <AttendanceRequests requests={requests} token={token} onRefresh={fetchRequests} />
       )}
 
       {tab === "students" && (

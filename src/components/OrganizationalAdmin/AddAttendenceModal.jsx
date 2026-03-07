@@ -2,12 +2,12 @@
 import React from "react";
 import "../../styles/admin.css";
 
-const AddAttendanceModal = ({ title, request, onClose, onAccept, onReject }) => {
+const AddAttendanceModal = ({ title, request, onClose, onAccept, onReject, loading = false }) => {
   return (
     <div className="modal-overlay">
       <div className="modal-box">
         {/* Cancel X button */}
-        <button className="modal-close" onClick={onClose}>×</button>
+        <button className="modal-close" onClick={onClose} disabled={loading}>×</button>
         <h3 style={{ textAlign: "center" }}>{title}</h3>
 
         <div style={{ padding: "10px 0" }}>
@@ -22,8 +22,12 @@ const AddAttendanceModal = ({ title, request, onClose, onAccept, onReject }) => 
         </div>
 
         <div className="modal-actions">
-          <button onClick={onReject} className="del-btn">Reject</button>
-          <button onClick={onAccept} className="primary">Accept</button>
+          <button onClick={onReject} className="del-btn" disabled={loading}>
+            {loading ? "Processing..." : "Reject"}
+          </button>
+          <button onClick={onAccept} className="primary" disabled={loading}>
+            {loading ? "Processing..." : "Accept"}
+          </button>
         </div>
       </div>
     </div>

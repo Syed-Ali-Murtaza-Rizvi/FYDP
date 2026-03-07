@@ -1,30 +1,76 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import { Building2, CalendarDays, User } from "lucide-react";
 import "./Signup.css";
 import signupImage from "../../assets/signup.png"; // your PNG image
 
 const Signup = () => {
   const [role, setRole] = useState("admin");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
+    confirmPassword: "",
     organization: "",
     society: "",
   });
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    setError("");
   };
 
-  const handleSignup = () => {
+  const handleSignup = async () => {
+    setError("");
+
     if (!form.email || !form.password) {
-      alert("Please fill required fields");
+      setError("Please fill in all required fields.");
       return;
     }
 
+    if (role === "admin") {
+      if (!form.organization) {
+        setError("Please enter the organization name.");
+        return;
+      }
+      if (form.password !== form.confirmPassword) {
+        setError("Passwords do not match.");
+        return;
+      }
+
+      const payload = {
+        Management_name: form.organization,
+        email: form.email,
+        password: form.password,
+        password2: form.confirmPassword,
+      };
+
+      try {
+        setLoading(true);
+        await axios.post("/api/auth/register/management/", payload);
+
+        alert("Organization Admin registered successfully!");
+        navigate("/login");
+      } catch (err) {
+        const result = err.response?.data;
+        if (result) {
+          const messages = Object.values(result).flat().join(" ");
+          setError(messages || "Registration failed. Please try again.");
+        } else {
+          setError("Network error. Please check your connection and try again.");
+        }
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
+    // Existing localStorage logic for other roles
     const newUser = {
       role,
       ...form,
@@ -32,11 +78,7 @@ const Signup = () => {
     };
 
     const key =
-      role === "admin"
-        ? "orgAdmins"
-        : role === "eventAdmin"
-        ? "eventAdmins"
-        : "participants";
+      role === "eventAdmin" ? "eventAdmins" : "participants";
 
     const existing = JSON.parse(localStorage.getItem(key)) || [];
     existing.push(newUser);
@@ -123,6 +165,7 @@ const Signup = () => {
 
             <input
               name="email"
+              type="email"
               placeholder="Email"
               value={form.email}
               onChange={handleChange}
@@ -136,8 +179,20 @@ const Signup = () => {
               onChange={handleChange}
             />
 
-            <button className="submit-btn" onClick={handleSignup}>
-              Submit
+            {role === "admin" && (
+              <input
+                type="password"
+                name="confirmPassword"
+                placeholder="Confirm Password"
+                value={form.confirmPassword}
+                onChange={handleChange}
+              />
+            )}
+
+            {error && <p className="error-msg">{error}</p>}
+
+            <button className="submit-btn" onClick={handleSignup} disabled={loading}>
+              {loading ? "Registering..." : "Submit"}
             </button>
           </div>
 
