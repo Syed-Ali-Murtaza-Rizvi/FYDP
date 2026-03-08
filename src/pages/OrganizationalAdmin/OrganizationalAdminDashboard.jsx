@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../../utils/axiosInstance";
 import adminData from "../../data/AdminData";
 import AdminHeader from "../../components/OrganizationalAdmin/AdminHeader";
 import AttendanceRequests from "../../components/OrganizationalAdmin/AttendenceRequest";
@@ -46,16 +46,9 @@ const OrganizationalAdminDashboard = () => {
   }, [adminProfile, navigate]);
 
   // ✅ Fetch attendance requests from API
-  const token = (() => {
-    try { return JSON.parse(localStorage.getItem("currentUser"))?.token; } catch { return null; }
-  })();
-
   const fetchRequests = async () => {
-    if (!token) return;
     try {
-      const { data } = await axios.get("/api/update-attendance-requests/", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const { data } = await axios.get("/api/update-attendance-requests/");
       setRequests(Array.isArray(data) ? data : data.results ?? []);
     } catch (err) {
       console.error("Failed to fetch attendance requests", err);
@@ -68,25 +61,7 @@ const OrganizationalAdminDashboard = () => {
 
   /* ---------------- REGISTER STUDENT ---------------- */
   const handleRegisterStudent = (student) => {
-    const stored = JSON.parse(localStorage.getItem("students")) || [];
-
-    const exists = stored.find(s => s.id === student.id);
-    if (exists) {
-      alert("Student already exists");
-      return;
-    }
-
-    const newStudent = {
-      ...student,
-      password: student.id
-    };
-
-    stored.push(newStudent);
-    localStorage.setItem("students", JSON.stringify(stored));
-
-    alert(
-      `Student Registered!\n\nLogin:\nID: ${newStudent.id}\nPassword: ${newStudent.password}`
-    );
+    alert(`Student "${student.name}" registered successfully!`);
   };
 
   /* ---------------- REGISTER TEACHER ---------------- */
@@ -126,7 +101,7 @@ const OrganizationalAdminDashboard = () => {
       <AdminHeader tab={tab} setTab={setTab} />
 
       {tab === "requests" && (
-        <AttendanceRequests requests={requests} token={token} onRefresh={fetchRequests} />
+        <AttendanceRequests requests={requests} onRefresh={fetchRequests} />
       )}
 
       {tab === "students" && (

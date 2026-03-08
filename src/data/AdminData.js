@@ -12,7 +12,7 @@ const adminData = {
 
   years: ["2021", "2022", "2023", "2024"],
   batches: ["2021", "2022", "2023", "2024"],
-  programs: ["CSIT", "AI", "CYS", "DS"],
+  programs: ["CS", "SE", "CYS", "DS"],
   departments: ["Computer Science"],
 
   courses: [

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { BookOpen } from "lucide-react";
+import axios from "../../utils/axiosInstance";
 import "../../styles/admin.css";
 
 const ManageTeachers = ({ programs = [], years = [] }) => {
@@ -119,11 +120,15 @@ const ManageTeachers = ({ programs = [], years = [] }) => {
     id: "",
     name: "",
     email: "",
+    password: "",
     phone: "",
     years: "",
     programs: "",
     courses: ""
   });
+
+  const [registerLoading, setRegisterLoading] = useState(false);
+  const [registerError, setRegisterError] = useState("");
 
   /* ======================
      FILTER STATE
@@ -150,44 +155,40 @@ const ManageTeachers = ({ programs = [], years = [] }) => {
   /* ======================
      REGISTER TEACHER
   ====================== */
-  const handleRegister = () => {
-    if (!form.id || !form.name) {
-      alert("Teacher ID and Name are required");
+  const handleRegister = async () => {
+    if (!form.name || !form.email || !form.password) {
+      setRegisterError("Name, Email, and Password are required");
       return;
     }
 
-    if (teachers.find(t => t.id === form.id)) {
-      alert("Teacher already exists");
-      return;
+    setRegisterLoading(true);
+    setRegisterError("");
+
+    try {
+      const payload = {
+        role: "teacher",
+        name: form.name,
+        email: form.email,
+        password: form.password,
+        ...(form.id && { id: form.id }),
+        ...(form.phone && { phone: form.phone }),
+        ...(form.years && { years: form.years }),
+        ...(form.programs && { programs: form.programs }),
+        ...(form.courses && { courses: form.courses }),
+      };
+
+      const { data } = await axios.post("/api/signup", payload);
+
+      alert(`Teacher "${data.name}" registered successfully!`);
+      setForm({ id: "", name: "", email: "", password: "", phone: "", years: "", programs: "", courses: "" });
+    } catch (err) {
+      console.error("Teacher registration error:", err.response?.data || err.message);
+      const errData = err.response?.data;
+      const msg = errData?.message || errData?.detail || errData?.email?.[0] || errData?.name?.[0] || JSON.stringify(errData) || "Registration failed. Please try again.";
+      setRegisterError(msg);
+    } finally {
+      setRegisterLoading(false);
     }
-
-    const newTeacher = {
-      id: form.id,
-      name: form.name,
-      email: form.email,
-      phone: form.phone,
-      years: parseCommaList(form.years),
-      programs: parseCommaList(form.programs),
-      department: admin.department || "N/A",
-      courses: parseCourses(form.courses),
-      password: form.id // default password
-    };
-
-    const updated = [...teachers, newTeacher];
-    localStorage.setItem("teachers", JSON.stringify(updated));
-    setTeachers(updated);
-
-    setForm({
-      id: "",
-      name: "",
-      email: "",
-      phone: "",
-      years: "",
-      programs: "",
-      courses: ""
-    });
-
-    alert(`Teacher Registered\nID: ${newTeacher.id}\nPassword: ${newTeacher.password}`);
   };
 
   /* ======================
@@ -274,34 +275,36 @@ const ManageTeachers = ({ programs = [], years = [] }) => {
 
         <div className="grid-2">
           <input name="name" placeholder="Full Name *" value={form.name} onChange={handleChange} />
-          <input name="id" placeholder="Teacher ID *" value={form.id} onChange={handleChange} />
-          <input name="email" placeholder="Email" value={form.email} onChange={handleChange} />
+          <input name="email" placeholder="Email *" value={form.email} onChange={handleChange} />
+          <input name="password" type="password" placeholder="Password *" value={form.password} onChange={handleChange} />
+          <input name="id" placeholder="Teacher ID" value={form.id} onChange={handleChange} />
           <input name="phone" placeholder="Phone" value={form.phone} onChange={handleChange} />
 
           <input
             name="years"
-            placeholder="Years (e.g. 2021, 2022)"
+            placeholder="Years (e.g. 1,2,3)"
             value={form.years}
             onChange={handleChange}
           />
 
           <input
             name="programs"
-            placeholder="Programs (e.g. CSIT, AI)"
+            placeholder="Programs (e.g. CS,SE)"
             value={form.programs}
             onChange={handleChange}
           />
 
           <input
             name="courses"
-            placeholder="Courses (CODE: Name, ...)"
+            placeholder="Courses (CS301: Database, ...)"
             value={form.courses}
             onChange={handleChange}
           />
         </div>
 
-        <button className="primary" onClick={handleRegister}>
-          Register Teacher
+        {registerError && <p style={{ color: "red", marginBottom: "8px" }}>{registerError}</p>}
+        <button className="primary" onClick={handleRegister} disabled={registerLoading}>
+          {registerLoading ? "Registering..." : "Register Teacher"}
         </button>
       </div>
 

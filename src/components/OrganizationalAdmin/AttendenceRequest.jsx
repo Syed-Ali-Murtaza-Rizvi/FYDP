@@ -1,23 +1,20 @@
 // src/components/admin/AttendanceRequests.jsx
 import React, { useState } from "react";
-import axios from "axios";
+import axios from "../../utils/axiosInstance";
 import { ClipboardList } from "lucide-react";
 import AddAttendanceModal from "./AddAttendenceModal";
 
-const AttendanceRequests = ({ requests = [], token, onRefresh }) => {
+const AttendanceRequests = ({ requests = [], onRefresh }) => {
   const [selected, setSelected] = useState(null);
   const [showReview, setShowReview] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
-
-  const authHeader = { Authorization: `Bearer ${token}` };
 
   const handleDecision = async (id, action) => {
     setActionLoading(true);
     try {
       await axios.post(
         `/api/update-attendance-requests/${id}/${action}/`,
-        {},
-        { headers: authHeader }
+        {}
       );
       setShowReview(false);
       setSelected(null);
