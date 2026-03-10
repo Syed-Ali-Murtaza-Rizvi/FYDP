@@ -29,6 +29,8 @@ const ManageStudents = ({ years, programs, onRegister }) => {
     id: "",
     courses: ""
   });
+  const [updateLoading, setUpdateLoading] = useState(false);
+  const [updateError, setUpdateError] = useState("");
 
   const [showBulkModal, setShowBulkModal] = useState(false);
   const [bulkForm, setBulkForm] = useState({
@@ -102,29 +104,51 @@ const ManageStudents = ({ years, programs, onRegister }) => {
     }
   };
 
-  // Update courses for individual student
-  const handleUpdateSubmit = () => {
-    const updatedStudents = allStudents.map(s => {
-      if (s.id === updateForm.id) {
-        return {
-          ...s,
-          courses: updateForm.courses
-            .split(",")
-            .map(c => {
-              const [code, name] = c.split(":").map(s => s.trim());
-              return { code, name };
-            })
-        };
-      }
-      return s;
-    });
+  // Format courses array/string into editable string
+  const formatCoursesForEdit = (courses) => {
+    if (!courses) return "";
+    if (typeof courses === "string") return courses;
+    if (Array.isArray(courses)) {
+      return courses.map(c => {
+        if (typeof c === "string") return c;
+        const code = c.course_code || c.code || "";
+        const name = c.course_name || c.name || "";
+        return code && name ? `${code}: ${name}` : code || name || JSON.stringify(c);
+      }).join(", ");
+    }
+    return "";
+  };
 
-    localStorage.setItem("students", JSON.stringify(updatedStudents));
-    console.log(
-      updatedStudents.find(s => s.id === updateForm.id)
-    );
+  // Update courses for individual student via API
+  const handleUpdateSubmit = async () => {
+    if (!updateForm.courses.trim()) {
+      setUpdateError("Courses field cannot be empty.");
+      return;
+    }
 
-    setShowUpdateModal(false);
+    setUpdateLoading(true);
+    setUpdateError("");
+
+    try {
+      await axios.patch(`/api/students/${updateForm.id}/update-courses/`, {
+        courses: updateForm.courses
+      });
+
+      setFilteredStudents(prev =>
+        prev.map(s =>
+          (s.student_id || s.id) === updateForm.id
+            ? { ...s, courses: updateForm.courses }
+            : s
+        )
+      );
+
+      alert("Courses updated successfully.");
+      setShowUpdateModal(false);
+    } catch (err) {
+      setUpdateError(err.response?.data?.message || "Failed to update courses.");
+    } finally {
+      setUpdateLoading(false);
+    }
   };
 
   // Bulk update courses for a year & batch
@@ -172,7 +196,8 @@ const ManageStudents = ({ years, programs, onRegister }) => {
       const { data } = await axios.get(`/api/students/?${params.toString()}`);
 
       console.log("Students API response:", data);
-      setFilteredStudents(data);
+      const list = Array.isArray(data) ? data : (data.results ?? []);
+      setFilteredStudents(list);
       if (data.length === 0) setFilterError("No students found for selected filters.");
     } catch (err) {
       setFilterError(err.response?.data?.message || "Failed to fetch students.");
@@ -270,10 +295,13 @@ const ManageStudents = ({ years, programs, onRegister }) => {
                 value={updateForm.courses}
                 onChange={handleUpdateChange}
               />
+              {updateError && <p style={{ color: "red", marginTop: "8px" }}>{updateError}</p>}
             </div>
             <div className="modal-actions">
-              <button className="cancel-btn" onClick={() => setShowUpdateModal(false)}>Cancel</button>
-              <button className="submit-btn" onClick={handleUpdateSubmit}>Submit</button>
+              <button className="cancel-btn" onClick={() => { setShowUpdateModal(false); setUpdateError(""); }}>Cancel</button>
+              <button className="submit-btn" onClick={handleUpdateSubmit} disabled={updateLoading}>
+                {updateLoading ? "Updating..." : "Submit"}
+              </button>
             </div>
           </div>
         </div>
@@ -333,7 +361,7 @@ const ManageStudents = ({ years, programs, onRegister }) => {
                     </td>
                     <td>
                       <div className="modify">
-                        <button className="update-btn" onClick={() => {setUpdateForm({ id: s.student_id || s.id, courses: s.courses?.map(c => c.code + ": " + c.name).join(", ") || "" }); setShowUpdateModal(true);}}>Update</button>
+                        <button className="update-btn" onClick={() => { setUpdateForm({ id: s.student_id || s.id, courses: formatCoursesForEdit(s.courses) }); setUpdateError(""); setShowUpdateModal(true); }}>Update</button>
                         <button className="del-btn" onClick={() => handleDelete(s.student_id || s.id)}>Delete</button>
                       </div>
                     </td>

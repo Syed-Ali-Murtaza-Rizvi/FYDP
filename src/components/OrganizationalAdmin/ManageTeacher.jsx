@@ -136,6 +136,8 @@ const ManageTeachers = ({ programs = [], years = [] }) => {
   const [filterYear, setFilterYear] = useState("");
   const [filterProgram, setFilterProgram] = useState("");
   const [filteredTeachers, setFilteredTeachers] = useState([]);
+  const [filterLoading, setFilterLoading] = useState(false);
+  const [filterError, setFilterError] = useState("");
 
   /* ======================
      UPDATE MODAL
@@ -194,44 +196,48 @@ const ManageTeachers = ({ programs = [], years = [] }) => {
   /* ======================
      SEARCH
   ====================== */
-  const handleSearch = () => {
-    if (!filterYear || !filterProgram) {
-      alert("Select Year & Program");
+  const handleSearch = async () => {
+    if (!filterYear && !filterProgram) {
+      setFilterError("Please select at least Year or Program");
       return;
     }
 
-    const result = teachers.filter(
-      t =>
-        Array.isArray(t.years) &&
-        Array.isArray(t.programs) &&
-        t.years.includes(filterYear) &&
-        t.programs.includes(filterProgram)
-    );
+    setFilterLoading(true);
+    setFilterError("");
+    setFilteredTeachers([]);
 
-    setFilteredTeachers(result);
+    try {
+      const params = new URLSearchParams();
+      if (filterYear) params.append("years", filterYear);
+      if (filterProgram) params.append("programs", filterProgram);
+
+      const { data } = await axios.get(`/api/teachers/?${params.toString()}`);
+      console.log("Teachers API raw response:", JSON.stringify(data, null, 2));
+
+      const list = Array.isArray(data) ? data : (data.results ?? []);
+      console.log("First teacher object:", list[0]);
+      setFilteredTeachers(list);
+      if (list.length === 0) setFilterError("No teachers found for selected filters.");
+    } catch (err) {
+      setFilterError(err.response?.data?.message || "Failed to fetch teachers.");
+    } finally {
+      setFilterLoading(false);
+    }
   };
 
   /* ======================
      DELETE
   ====================== */
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (!window.confirm("Delete this teacher?")) return;
 
-    const updated = teachers.filter(t => t.id !== id);
-    localStorage.setItem("teachers", JSON.stringify(updated));
-    setTeachers(updated);
-
-    if (filterYear && filterProgram) {
-      const refreshed = updated.filter(
-        t =>
-          Array.isArray(t.years) &&
-          Array.isArray(t.programs) &&
-          t.years.includes(filterYear) &&
-          t.programs.includes(filterProgram)
-      );
-      setFilteredTeachers(refreshed);
-    } else {
-      setFilteredTeachers([]);
+    try {
+      await axios.delete(`/api/teachers/${id}/`);
+      setFilteredTeachers(prev => prev.filter(t => (t.teacher_id || t.id || t.teacherId) !== id));
+      setTeachers(prev => prev.filter(t => (t.teacher_id || t.id || t.teacherId) !== id));
+      alert("Teacher deleted successfully.");
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to delete teacher.");
     }
   };
 
@@ -324,15 +330,17 @@ const ManageTeachers = ({ programs = [], years = [] }) => {
             {adminPrograms.map(p => <option key={p} value={p}>{p}</option>)}
           </select>
 
-          <button className="primary-outline" onClick={handleSearch}>
-            Search
+          <button className="primary-outline" onClick={handleSearch} disabled={filterLoading}>
+            {filterLoading ? "Searching..." : "Search"}
           </button>
         </div>
+
+        {filterError && <p style={{ color: "red", margin: "8px 0" }}>{filterError}</p>}
 
         {/* RESULTS */}
         <div className="placeholder">
           {filteredTeachers.length === 0 ? (
-            <p>No teachers found.</p>
+            !filterError && <p>Use the filters above to search teachers.</p>
           ) : (
             <table className="simple-table teacher-search-table">
               <thead>
@@ -341,47 +349,52 @@ const ManageTeachers = ({ programs = [], years = [] }) => {
                   <th>ID</th>
                   <th>Years</th>
                   <th>Programs</th>
-                  <th>Department</th>
                   <th>Courses</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredTeachers.map(t => (
-                  <tr key={t.id}>
-                    <td>{t.name}</td>
-                    <td>{t.id}</td>
-                    <td>{t.years.join(", ")}</td>
-                    <td>{t.programs.join(", ")}</td>
-                    <td>{t.department}</td>
-                    <td>{t.courses.map(c => c.code).join(", ")}</td>
+                {filteredTeachers.map((t, idx) => {
+                  const tid = t.teacher_id || t.id || t.teacherId || idx;
+                  const tname = t.name || t.full_name || t.teacher_name || "-";
+                  const tIdDisplay = t.teacher_id || t.id || t.teacherId || "-";
+                  const tYears = Array.isArray(t.years) ? t.years.join(", ") : (Array.isArray(t.batches) ? t.batches.join(", ") : (t.years || t.year || "-"));
+                  const tPrograms = Array.isArray(t.programs) ? t.programs.join(", ") : (t.programs || t.program || "-");
+                  const tCoursesDisplay = Array.isArray(t.courses)
+                    ? t.courses.map(c => typeof c === "string" ? c : (c.course_code || c.code || "")).join(", ")
+                    : (t.courses || "-");
+                  const tCoursesForEdit = Array.isArray(t.courses)
+                    ? t.courses.map(c => typeof c === "string" ? c : `${c.course_code || c.code || ""}: ${c.course_name || c.name || ""}`).join(", ")
+                    : (t.courses || "");
+                  return (
+                  <tr key={tid}>
+                    <td>{tname}</td>
+                    <td>{tIdDisplay}</td>
+                    <td>{tYears}</td>
+                    <td>{tPrograms}</td>
+                    <td>{tCoursesDisplay}</td>
                     <td>
                       <div className="modify">
                         <button
                           className="update-btn"
                           onClick={() => {
-                            setUpdateForm({
-                              id: t.id,
-                              courses: t.courses
-                                .map(c => `${c.code}: ${c.name}`)
-                                .join(", ")
-                            });
+                            setUpdateForm({ id: tid, courses: tCoursesForEdit });
                             setShowUpdateModal(true);
                           }}
                         >
                           Update
                         </button>
-
                         <button
                           className="del-btn"
-                          onClick={() => handleDelete(t.id)}
+                          onClick={() => handleDelete(tid)}
                         >
                           Delete
                         </button>
                       </div>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           )}
