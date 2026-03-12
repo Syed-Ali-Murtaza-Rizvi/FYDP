@@ -9,6 +9,12 @@ const AttendanceRequests = ({ requests = [], onRefresh }) => {
   const [showReview, setShowReview] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
 
+  const formatDateTime = (value) => {
+    if (!value) return "N/A";
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? "N/A" : parsed.toLocaleString();
+  };
+
   const handleDecision = async (id, action) => {
     setActionLoading(true);
     try {
@@ -51,16 +57,71 @@ const AttendanceRequests = ({ requests = [], onRefresh }) => {
           <div className="request-card" key={req.id}>
             <div className="request-left">
               <div><strong>Teacher</strong><br />{req.teacher_name ?? req.teacherName ?? "N/A"}</div>
-              <div><strong>Teacher ID</strong><br />{req.teacher ?? req.teacherId ?? "N/A"}</div>
-              <div><strong>Department</strong><br />{req.department ?? "N/A"}</div>
-              <div><strong>Batch</strong><br />{req.batch ?? "N/A"}</div>
-              <div><strong>Program</strong><br />{req.program ?? "N/A"}</div>
+              <div><strong>Teacher Roll No</strong><br />{req.teacher_rollNo ?? "N/A"}</div>
+              <div><strong>Student</strong><br />{req.student_name ?? "N/A"}</div>
+              <div><strong>Student Roll No</strong><br />{req.student_rollNo ?? "N/A"}</div>
+              <div><strong>Department</strong><br />{req.student_dept ?? attendanceType
+: 
+"regular"
+classes_to_add
+: 
+"2"
+course
+: 
+4
+course_name
+: 
+"DATABASE"
+id
+: 
+1
+management
+: 
+1
+management_name
+: 
+"NED"
+processed_at
+: 
+null
+processed_by
+: 
+null
+reason
+: 
+"Beemar tha "
+requested_at
+: 
+null
+status
+: 
+"pending"
+student
+: 
+7
+student_name
+: 
+"eman shahid"
+student_rollNo
+: 
+"22058"
+teacher
+: 
+2
+teacher_name
+: 
+"Murtaza Rizvi"
+teacher_rollNo
+: 
+"229834"req.department ?? "N/A"}</div>
+              <div><strong>Section</strong><br />{req.student_section ?? "N/A"}</div>
               <div><strong>Course</strong><br />{req.course_name ?? req.course ?? "N/A"}</div>
               <div><strong>Attendance Type</strong><br />{req.attendance_type ?? req.attendanceType ?? "N/A"}</div>
-              <div><strong>Slots</strong><br />{req.slots ?? "N/A"}</div>
+              <div><strong>Classes To Add</strong><br />{req.classes_to_add ?? req.slots ?? "N/A"}</div>
               <div><strong>Reason</strong><br /><em>"{req.reason ?? ""}"</em></div>
+              <div><strong>Management</strong><br />{req.management_name ?? "N/A"}</div>
               <div><strong>Status</strong><br />{req.status ?? "N/A"}</div>
-              <div><strong>Requested At</strong><br />{req.created_at ?? req.createdAt ? new Date(req.created_at ?? req.createdAt).toLocaleString() : "N/A"}</div>
+              <div><strong>Requested At</strong><br />{formatDateTime(req.requested_at ?? req.created_at ?? req.createdAt)}</div>
             </div>
 
             <div className="request-actions">
@@ -80,14 +141,17 @@ const AttendanceRequests = ({ requests = [], onRefresh }) => {
           title={selected.course_name ?? selected.course}
           request={{
             teacherName: selected.teacher_name ?? selected.teacherName ?? "N/A",
-            teacherId: selected.teacher ?? selected.teacherId ?? "N/A",
-            department: selected.department ?? "N/A",
-            batch: selected.batch ?? "N/A",
-            program: selected.program ?? "N/A",
+            teacherRollNo: selected.teacher_rollNo ?? "N/A",
+            studentName: selected.student_name ?? "N/A",
+            studentRollNo: selected.student_rollNo ?? "N/A",
+            department: selected.student_dept ?? selected.department ?? "N/A",
+            section: selected.student_section ?? "N/A",
             course: selected.course_name ?? selected.course ?? "N/A",
             attendanceType: selected.attendance_type ?? selected.attendanceType ?? "N/A",
-            slots: selected.slots ?? "N/A",
+            classesToAdd: selected.classes_to_add ?? selected.slots ?? "N/A",
             reason: selected.reason ?? "",
+            status: selected.status ?? "N/A",
+            requestedAt: formatDateTime(selected.requested_at ?? selected.created_at ?? selected.createdAt),
           }}
           onClose={() => { setShowReview(false); setSelected(null); }}
           onAccept={() => handleDecision(selected.id, "approve")}

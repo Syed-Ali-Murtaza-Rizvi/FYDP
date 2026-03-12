@@ -11,13 +11,17 @@ const AddAttendanceModal = ({ title, request, onClose, onAccept, onReject, loadi
         <h3 style={{ textAlign: "center" }}>{title}</h3>
 
         <div style={{ padding: "10px 0" }}>
-          <p><strong>Teacher:</strong> {request.teacherName} ({request.teacherId})</p>
+          <p><strong>Teacher:</strong> {request.teacherName}</p>
+          <p><strong>Teacher Roll No:</strong> {request.teacherRollNo}</p>
+          <p><strong>Student:</strong> {request.studentName}</p>
+          <p><strong>Student Roll No:</strong> {request.studentRollNo}</p>
           <p><strong>Department:</strong> {request.department}</p>
-          <p><strong>Batch:</strong> {request.batch}</p>
-          <p><strong>Program:</strong> {request.program}</p>
+          <p><strong>Section:</strong> {request.section}</p>
           <p><strong>Course:</strong> {request.course}</p>
           <p><strong>Attendance Type:</strong> {request.attendanceType}</p>
-          <p><strong>Slots:</strong> {request.slots}</p>
+          <p><strong>Classes To Add:</strong> {request.classesToAdd}</p>
+          <p><strong>Status:</strong> {request.status}</p>
+          <p><strong>Requested At:</strong> {request.requestedAt}</p>
           <p><strong>Reason:</strong> <em>"{request.reason}"</em></p>
         </div>
 

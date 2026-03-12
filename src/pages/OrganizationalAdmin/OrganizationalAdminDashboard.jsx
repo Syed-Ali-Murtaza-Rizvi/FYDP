@@ -48,7 +48,7 @@ const OrganizationalAdminDashboard = () => {
   // ✅ Fetch attendance requests from API
   const fetchRequests = async () => {
     try {
-      const { data } = await axios.get("/api/update-attendance-requests/");
+      const { data } = await axios.get(`/api/update-attendance-requests/?management_id=${adminProfile?.adminId}`);
       setRequests(Array.isArray(data) ? data : data.results ?? []);
     } catch (err) {
       console.error("Failed to fetch attendance requests", err);
