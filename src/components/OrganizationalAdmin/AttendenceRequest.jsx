@@ -60,60 +60,7 @@ const AttendanceRequests = ({ requests = [], onRefresh }) => {
               <div><strong>Teacher Roll No</strong><br />{req.teacher_rollNo ?? "N/A"}</div>
               <div><strong>Student</strong><br />{req.student_name ?? "N/A"}</div>
               <div><strong>Student Roll No</strong><br />{req.student_rollNo ?? "N/A"}</div>
-              <div><strong>Department</strong><br />{req.student_dept ?? attendanceType
-: 
-"regular"
-classes_to_add
-: 
-"2"
-course
-: 
-4
-course_name
-: 
-"DATABASE"
-id
-: 
-1
-management
-: 
-1
-management_name
-: 
-"NED"
-processed_at
-: 
-null
-processed_by
-: 
-null
-reason
-: 
-"Beemar tha "
-requested_at
-: 
-null
-status
-: 
-"pending"
-student
-: 
-7
-student_name
-: 
-"eman shahid"
-student_rollNo
-: 
-"22058"
-teacher
-: 
-2
-teacher_name
-: 
-"Murtaza Rizvi"
-teacher_rollNo
-: 
-"229834"req.department ?? "N/A"}</div>
+              <div><strong>Department</strong><br />{req.student_dept ?? req.department ?? "N/A"}</div>
               <div><strong>Section</strong><br />{req.student_section ?? "N/A"}</div>
               <div><strong>Course</strong><br />{req.course_name ?? req.course ?? "N/A"}</div>
               <div><strong>Attendance Type</strong><br />{req.attendance_type ?? req.attendanceType ?? "N/A"}</div>

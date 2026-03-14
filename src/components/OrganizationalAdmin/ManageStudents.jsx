@@ -4,6 +4,23 @@ import axios from "../../utils/axiosInstance";
 import "../../styles/admin.css";
 
 const ManageStudents = ({ years, programs, onRegister }) => {
+  const createEmptyCourseEntry = () => ({
+    courseCode: "",
+  });
+
+  const normalizeCourseCodesInput = (value) =>
+    (value || "")
+      .toUpperCase()
+      .replace(/\s*,\s*/g, ", ")
+      .replace(/^,|,$/g, "")
+      .replace(/\s{2,}/g, " ");
+
+  const parseCourseCodes = (value) =>
+    (value || "")
+      .split(",")
+      .map(code => code.trim().toUpperCase())
+      .filter(Boolean);
+
   // Form for new student registration
   const [form, setForm] = useState({
     name: "",
@@ -27,7 +44,7 @@ const ManageStudents = ({ years, programs, onRegister }) => {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [updateForm, setUpdateForm] = useState({
     id: "",
-    courses: ""
+    courses: [createEmptyCourseEntry()]
   });
   const [updateLoading, setUpdateLoading] = useState(false);
   const [updateError, setUpdateError] = useState("");
@@ -44,11 +61,35 @@ const ManageStudents = ({ years, programs, onRegister }) => {
 
   // Handle form input change
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    const nextValue = name === "courses" ? normalizeCourseCodesInput(value) : value;
+    setForm({ ...form, [name]: nextValue });
   };
 
-  const handleUpdateChange = (e) => {
-    setUpdateForm({ ...updateForm, [e.target.name]: e.target.value });
+  const updateCourseList = (index, field, value) => {
+    setUpdateForm(prev => ({
+      ...prev,
+      courses: prev.courses.map((course, courseIndex) =>
+        courseIndex === index ? { ...course, [field]: value } : course
+      ),
+    }));
+  };
+
+  const addUpdateCourseField = () => {
+    setUpdateForm(prev => ({
+      ...prev,
+      courses: [...prev.courses, createEmptyCourseEntry()],
+    }));
+  };
+
+  const removeUpdateCourseField = (index) => {
+    setUpdateForm(prev => {
+      const nextCourses = prev.courses.filter((_, courseIndex) => courseIndex !== index);
+      return {
+        ...prev,
+        courses: nextCourses.length ? nextCourses : [createEmptyCourseEntry()],
+      };
+    });
   };
 
   const handleBulkChange = (e) => {
@@ -62,6 +103,12 @@ const ManageStudents = ({ years, programs, onRegister }) => {
       return;
     }
 
+    const courseCodes = parseCourseCodes(form.courses);
+    if (!courseCodes.length) {
+      setRegisterError("Enter at least one course code (e.g. CS101, CS102).");
+      return;
+    }
+
     setLoading(true);
     setRegisterError("");
 
@@ -72,10 +119,10 @@ const ManageStudents = ({ years, programs, onRegister }) => {
         email: form.email,
         password: form.password,
         ...(form.id && { id: form.id }),
-        ...(form.year && { year: form.year }),
+        ...(form.year && { year: Number.isNaN(Number(form.year)) ? form.year : Number(form.year) }),
         ...(form.program && { program: form.program }),
         ...(form.section && { section: form.section }),
-        ...(form.courses && { courses: form.courses }),
+        courses: courseCodes,
       };
 
       const { data } = await axios.post("/api/signup", payload);
@@ -104,25 +151,55 @@ const ManageStudents = ({ years, programs, onRegister }) => {
     }
   };
 
-  // Format courses array/string into editable string
-  const formatCoursesForEdit = (courses) => {
-    if (!courses) return "";
-    if (typeof courses === "string") return courses;
-    if (Array.isArray(courses)) {
-      return courses.map(c => {
-        if (typeof c === "string") return c;
-        const code = c.course_code || c.code || "";
-        const name = c.course_name || c.name || "";
-        return code && name ? `${code}: ${name}` : code || name || JSON.stringify(c);
-      }).join(", ");
+  const normalizeCourseForUpdate = (course) => {
+    if (typeof course === "string") {
+      return {
+        courseCode: course.toUpperCase(),
+      };
     }
+
+    return {
+      courseCode: String(course?.course_code ?? course?.code ?? "").toUpperCase(),
+    };
+  };
+
+  const getCoursesForUpdate = (courses) => {
+    if (!Array.isArray(courses) || !courses.length) {
+      return [createEmptyCourseEntry()];
+    }
+
+    const normalized = courses
+      .map(course => normalizeCourseForUpdate(course))
+      .filter(course =>
+        String(course.courseCode ?? "").trim()
+      );
+
+    return normalized.length ? normalized : [createEmptyCourseEntry()];
+  };
+
+  const buildStudentCourseCodes = (courses) => {
+    const codes = (Array.isArray(courses) ? courses : [])
+      .map(course => String(course?.courseCode || "").trim().toUpperCase())
+      .filter(Boolean);
+
+    return [...new Set(codes)];
+  };
+
+  const validateStudentCourseCodes = (courses) => {
+    const relevantRows = (Array.isArray(courses) ? courses : []).filter(course =>
+      String(course?.courseCode || "").trim()
+    );
+
+    if (!relevantRows.length) return "Add at least one course.";
+
     return "";
   };
 
   // Update courses for individual student via API
   const handleUpdateSubmit = async () => {
-    if (!updateForm.courses.trim()) {
-      setUpdateError("Courses field cannot be empty.");
+    const courseError = validateStudentCourseCodes(updateForm.courses);
+    if (courseError) {
+      setUpdateError(courseError);
       return;
     }
 
@@ -130,19 +207,31 @@ const ManageStudents = ({ years, programs, onRegister }) => {
     setUpdateError("");
 
     try {
-      await axios.patch(`/api/students/${updateForm.id}/update-courses/`, {
-        courses: updateForm.courses
+      const courseCodes = buildStudentCourseCodes(updateForm.courses);
+      const { data } = await axios.patch(`/api/students/${updateForm.id}/update-courses/`, {
+        courses: courseCodes,
       });
+
+      const nextCourses = Array.isArray(data?.courses) ? data.courses : courseCodes;
 
       setFilteredStudents(prev =>
         prev.map(s =>
           (s.student_id || s.id) === updateForm.id
-            ? { ...s, courses: updateForm.courses }
+            ? { ...s, courses: nextCourses }
             : s
         )
       );
 
-      alert("Courses updated successfully.");
+      const skippedCourses = Array.isArray(data?.skipped_courses) ? data.skipped_courses : [];
+      if (skippedCourses.length) {
+        const skippedCodes = skippedCourses
+          .map(item => item?.course_code)
+          .filter(Boolean)
+          .join(", ");
+        alert(`${data?.message || "Courses updated successfully."}\nSkipped: ${skippedCodes || skippedCourses.length}`);
+      } else {
+        alert(data?.message || "Courses updated successfully.");
+      }
       setShowUpdateModal(false);
     } catch (err) {
       setUpdateError(err.response?.data?.message || "Failed to update courses.");
@@ -236,7 +325,7 @@ const ManageStudents = ({ years, programs, onRegister }) => {
           <input name="year" placeholder="Year (e.g. 2)" value={form.year} onChange={handleChange} />
           <input name="program" placeholder="Program / Department" value={form.program} onChange={handleChange} />
           <input name="section" placeholder="Section (default: A)" value={form.section} onChange={handleChange} />
-          <input name="courses" placeholder="Courses (CS301: Database, ...)" value={form.courses} onChange={handleChange} />
+          <input name="courses" placeholder="Courses (e.g. CS101, CS102)" value={form.courses} onChange={handleChange} />
         </div>
         {registerError && <p style={{ color: "red", marginBottom: "8px" }}>{registerError}</p>}
         <button className="primary" onClick={handleSubmit} disabled={loading}>
@@ -289,12 +378,38 @@ const ManageStudents = ({ years, programs, onRegister }) => {
               <span className="close-btn" onClick={() => setShowUpdateModal(false)}>✖</span>
             </div>
             <div className="modal-content">
-              <input
-                name="courses"
-                placeholder="Courses (CODE: Name, ...)"
-                value={updateForm.courses}
-                onChange={handleUpdateChange}
-              />
+              <div style={{ display: "grid", gap: "12px", maxHeight: "45vh", overflowY: "auto", paddingRight: "4px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px" }}>
+                  <span>Edit allotted courses</span>
+                  <button type="button" className="primary-outline" onClick={addUpdateCourseField}>Add Course</button>
+                </div>
+
+                {updateForm.courses.map((course, index) => (
+                  <div
+                    key={`student-update-course-${index}`}
+                    style={{
+                      border: "1px solid #d9e2f2",
+                      borderRadius: "12px",
+                      padding: "14px",
+                      display: "grid",
+                      gap: "12px",
+                      background: "#f8fbff",
+                    }}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px" }}>
+                      <strong>Course {index + 1}</strong>
+                      <button type="button" className="del-btn" onClick={() => removeUpdateCourseField(index)}>Remove</button>
+                    </div>
+                    <div className="grid-2">
+                      <input
+                        placeholder="Course Code"
+                        value={course.courseCode}
+                        onChange={e => updateCourseList(index, "courseCode", e.target.value.toUpperCase())}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
               {updateError && <p style={{ color: "red", marginTop: "8px" }}>{updateError}</p>}
             </div>
             <div className="modal-actions">
@@ -348,7 +463,7 @@ const ManageStudents = ({ years, programs, onRegister }) => {
                     <td>{s.name || s.full_name || s.student_name || "-"}</td>
                     <td>{s.roll_no || s.rfid || s.student_id || s.id || "-"}</td>
                     <td>{s.year || "-"}</td>
-                    <td>{s.program || s.department || s.dept || "-"}</td>
+                    <td>{s.program || s.programs || s.department || s.dept || "-"}</td>
                     <td>{s.email || "-"}</td>
                     <td>
                       {Array.isArray(s.courses) && s.courses.length > 0
@@ -361,7 +476,7 @@ const ManageStudents = ({ years, programs, onRegister }) => {
                     </td>
                     <td>
                       <div className="modify">
-                        <button className="update-btn" onClick={() => { setUpdateForm({ id: s.student_id || s.id, courses: formatCoursesForEdit(s.courses) }); setUpdateError(""); setShowUpdateModal(true); }}>Update</button>
+                        <button className="update-btn" onClick={() => { setUpdateForm({ id: s.student_id || s.id, courses: getCoursesForUpdate(s.courses) }); setUpdateError(""); setShowUpdateModal(true); }}>Update</button>
                         <button className="del-btn" onClick={() => handleDelete(s.student_id || s.id)}>Delete</button>
                       </div>
                     </td>
