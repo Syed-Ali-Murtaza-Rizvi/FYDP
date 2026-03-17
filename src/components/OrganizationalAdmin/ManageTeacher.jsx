@@ -23,6 +23,7 @@ const ManageTeachers = ({ programs = [], years = [] }) => {
     Array.isArray(admin.programs) && admin.programs.length
       ? admin.programs
       : programs;
+  const filterProgramOptions = Array.isArray(programs) && programs.length ? programs : adminPrograms;
 
   /* ======================
      HELPERS
@@ -622,10 +623,10 @@ const ManageTeachers = ({ programs = [], years = [] }) => {
             {years.map(y => <option key={y} value={y}>{y}</option>)}
           </select>
 
-          {/* ✅ ADMIN PROGRAMS ONLY */}
+          {/* Program options from API filter options (fallback to admin programs) */}
           <select value={filterProgram} onChange={e => setFilterProgram(e.target.value)}>
             <option value="">Select Program</option>
-            {adminPrograms.map(p => <option key={p} value={p}>{p}</option>)}
+            {filterProgramOptions.map(p => <option key={p} value={p}>{p}</option>)}
           </select>
 
           <button className="primary-outline" onClick={handleSearch} disabled={filterLoading}>

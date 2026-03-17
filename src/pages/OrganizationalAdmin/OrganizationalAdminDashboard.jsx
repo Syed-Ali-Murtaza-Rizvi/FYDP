@@ -14,6 +14,14 @@ const OrganizationalAdminDashboard = () => {
   const navigate = useNavigate();
   const [tab, setTab] = useState("requests");
   const [requests, setRequests] = useState([]);
+  const [studentFilterOptions, setStudentFilterOptions] = useState({
+    years: adminData.years ?? [],
+    programs: adminData.programs ?? [],
+  });
+  const [teacherFilterOptions, setTeacherFilterOptions] = useState({
+    years: adminData.years ?? [],
+    programs: adminData.programs ?? [],
+  });
 
   useEffect(() => {
     document.body.classList.add("orgadmin-page");
@@ -55,9 +63,59 @@ const OrganizationalAdminDashboard = () => {
     }
   };
 
+  const fetchStudentFilterOptions = async () => {
+    try {
+      const { data } = await axios.get("/api/students/filter-options/");
+
+      const years = Array.isArray(data?.years)
+        ? data.years.map((value) => String(value))
+        : [];
+
+      const programs = Array.isArray(data?.programs) && data.programs.length
+        ? data.programs
+        : Array.isArray(data?.departments)
+          ? data.departments
+          : [];
+
+      setStudentFilterOptions({
+        years: years.length ? years : (adminData.years ?? []),
+        programs: programs.length ? programs : (adminData.programs ?? []),
+      });
+    } catch (err) {
+      console.error("Failed to fetch student filter options", err);
+    }
+  };
+
+  const fetchTeacherFilterOptions = async () => {
+    try {
+      const { data } = await axios.get("/api/teachers/filter-options/");
+
+      const years = Array.isArray(data?.years)
+        ? data.years.map((value) => String(value))
+        : [];
+
+      const programs = Array.isArray(data?.programs)
+        ? data.programs
+        : [];
+
+      setTeacherFilterOptions({
+        years: years.length ? years : (adminData.years ?? []),
+        programs: programs.length ? programs : (adminData.programs ?? []),
+      });
+    } catch (err) {
+      console.error("Failed to fetch teacher filter options", err);
+    }
+  };
+
   useEffect(() => {
     if (tab === "requests") fetchRequests();
   }, [tab]);
+
+  useEffect(() => {
+    if (!adminProfile?.adminId) return;
+    fetchStudentFilterOptions();
+    fetchTeacherFilterOptions();
+  }, [adminProfile?.adminId]);
 
   /* ---------------- REGISTER STUDENT ---------------- */
   const handleRegisterStudent = (student) => {
@@ -107,8 +165,8 @@ const OrganizationalAdminDashboard = () => {
       {tab === "students" && (
         <ManageStudents
           students={adminData.students}
-          years={adminData.years}
-          programs={adminData.programs}
+          years={studentFilterOptions.years}
+          programs={studentFilterOptions.programs}
           onRegister={handleRegisterStudent}
         />
       )}
@@ -116,8 +174,8 @@ const OrganizationalAdminDashboard = () => {
       {tab === "teachers" && (
         <ManageTeachers
           teachers={adminData.teachers}
-          years={adminData.years}
-          programs={adminData.programs}
+          years={teacherFilterOptions.years}
+          programs={teacherFilterOptions.programs}
           departments={adminData.departments}
           onRegister={handleRegisterTeacher}
         />
@@ -125,9 +183,9 @@ const OrganizationalAdminDashboard = () => {
 
       {tab === "view" && (
         <ViewAttendance
-          years={adminData.years}
+          years={studentFilterOptions.years}
           batches={adminData.batches}
-          programs={adminData.programs}
+          programs={studentFilterOptions.programs}
           courses={adminData.courses}
           records={adminData.studentAttendanceRecords}
         />
