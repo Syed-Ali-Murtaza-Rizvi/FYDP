@@ -37,33 +37,43 @@ const Login = () => {
     setError("");
 
     /* =========================
-       STUDENT LOGIN
+       STUDENT LOGIN (API)
     ========================= */
     if (data.role === "student") {
-      const students = JSON.parse(localStorage.getItem("students")) || [];
+      try {
+        setLoading(true);
+        const { data: result } = await axios.post("/api/auth/login/student/", {
+          email: data.email,
+          password: data.password,
+        });
 
-      const student = students.find(
-        (s) =>
-          (s.email === data.email || s.id === data.email) &&
-          s.password === data.password
-      );
-
-      if (student) {
+        // Persist session info expected by axiosInstance
         localStorage.setItem(
           "currentUser",
           JSON.stringify({
             role: "student",
-            id: student.id,
-            name: student.name,
-            email: student.email,
+            token: result.access,
+            refresh: result.refresh,
+            user_type: result.user_type,
+            student_id: result.student_id,
+            student_name: result.student_name,
+            email: result.email,
           })
         );
 
         navigate("/student");
         return;
+      } catch (err) {
+        const result = err.response?.data;
+        if (result) {
+          const messages = Object.values(result).flat().join(" ");
+          setError(messages || "Invalid credentials. Please try again.");
+        } else {
+          setError("Network error. Please check your connection and try again.");
+        }
+      } finally {
+        setLoading(false);
       }
-
-      alert("Invalid student credentials");
       return;
     }
 

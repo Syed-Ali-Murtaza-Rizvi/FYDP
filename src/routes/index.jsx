@@ -9,7 +9,7 @@ import EventAdminDashboard from '../pages/EventAdminDashboard'
 import Signup from '../pages/Auth/SignUp'
 import AdminDashboard from '../pages/AdminDashboard'
 import ParticipantDashboard from '../pages/Participant/ParticipantDashboard'
-
+import Home from '../pages/landing/Main'
 
 const RootRedirect = () => {
     useEffect(() => {
@@ -38,6 +38,7 @@ const router = createBrowserRouter([
             {path:"orgadmin",element:<OrganizationalAdminDashboard/>},
             {path:"participant",element:<ParticipantDashboard/>},
             { path: "*", element: <Navigate to="/login" replace /> },
+            { path: "home", element: <Home /> },
         ]
     },
 ])

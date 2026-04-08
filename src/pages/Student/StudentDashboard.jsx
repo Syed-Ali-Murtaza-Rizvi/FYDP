@@ -1,39 +1,86 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import ProfileCard from "../../components/ProfileCard";
 import CourseTable from "../../components/CourseTable";
-import students from "../../data/StudentData";
 import "./student.css";
 import { Html5Qrcode } from "html5-qrcode";
 import bgImage from "../../assets/background.jpeg";
+import axiosInstance from "../../utils/axiosInstance";
 
 const StudentDashboard = () => {
   const navigate = useNavigate();
   const [scannerOpen, setScannerOpen] = useState(false);
   const html5QrCodeRef = useRef(null);
 
-  /* ================= GET CURRENT USER ================= */
-  const profileData = useMemo(() => {
-    const stored = localStorage.getItem("currentUser");
-    if (!stored) return null;
-
-    const currentUser = JSON.parse(stored);
-    if (currentUser.role !== "student") return null;
-
-    return students.find(
-      (s) =>
-        s.profile.studentId === currentUser.studentId ||
-        s.email === currentUser.email
-    );
-  }, []);
-
-  const profile = profileData?.profile;
-  const overallAttendance = profileData?.overallAttendance;
-  const courses = profileData?.courses || [];
+  const [profile, setProfile] = useState(null);
+  const [overallAttendance, setOverallAttendance] = useState(null);
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!profile) navigate("/login");
-  }, [profile, navigate]);
+    const fetchProfile = async () => {
+      const stored = localStorage.getItem("currentUser");
+      if (!stored) {
+        navigate("/login");
+        return;
+      }
+
+      const currentUser = JSON.parse(stored);
+      if (currentUser.role !== "student") {
+        navigate("/login");
+        return;
+      }
+
+      const id = currentUser.student_id ?? currentUser.studentId ?? currentUser.id;
+      if (!id) {
+        navigate("/login");
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const { data } = await axiosInstance.get(`/api/students/${id}/`);
+
+        // Map API response to UI-friendly shape
+        const mappedProfile = {
+          name: data.student_name,
+          email: data.email,
+          studentId: data.student_id || data.student_rollNo,
+          year: data.year,
+          section: data.section,
+          department: data.dept || data.program,
+        };
+
+        const mappedOverall = {
+          percentage: data.overall_attendance,
+          status: data.overall_attendance >= 75 ? "Good" : "Below Average",
+        };
+
+        const mappedCourses = (data.courses || []).map((c) => ({
+          code: c.course_code || String(c.course_id),
+          name: c.course_name,
+          attendance: Math.round(
+            ((c.classes_attended_count || 0) / Math.max(c.classes_attended_count || 1, 1)) * 100
+          ),
+          present: c.classes_attended_count || 0,
+          total: c.classes_attended_count || 0,
+        }));
+
+        setProfile(mappedProfile);
+        setOverallAttendance(mappedOverall);
+        setCourses(mappedCourses);
+      } catch (err) {
+        setError("Failed to load profile. Please login again.");
+        localStorage.removeItem("currentUser");
+        navigate("/login");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [navigate]);
 
   /* ================= QR SCANNER ================= */
   const stopScanner = async () => {
@@ -99,6 +146,7 @@ const StudentDashboard = () => {
     }
   };
 
+  if (loading) return <p>Loading...</p>;
   if (!profile) return null;
 
   return (

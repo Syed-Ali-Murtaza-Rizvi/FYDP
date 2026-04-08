@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import logo from "../assets/trustmark.png";
+import logo from "../assets/footer.png";
 
 const Navbar = () => {
   const navigate = useNavigate();
