@@ -7,11 +7,31 @@ import { Html5Qrcode } from "html5-qrcode";
 import bgImage from "../../assets/background.jpeg";
 import axiosInstance from "../../utils/axiosInstance";
 
+const getCurrentLocation = () =>
+  new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject(new Error("Geolocation is not supported"));
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        resolve({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
+      },
+      (err) => reject(err)
+    );
+  });
+
 const StudentDashboard = () => {
   const navigate = useNavigate();
   const [scannerOpen, setScannerOpen] = useState(false);
   const html5QrCodeRef = useRef(null);
+  const scanInFlightRef = useRef(false);
 
+  const [authStudentId, setAuthStudentId] = useState(null);
   const [profile, setProfile] = useState(null);
   const [overallAttendance, setOverallAttendance] = useState(null);
   const [courses, setCourses] = useState([]);
@@ -38,9 +58,17 @@ const StudentDashboard = () => {
         return;
       }
 
+      const parsedAuthId = Number(id);
+      setAuthStudentId(Number.isFinite(parsedAuthId) ? parsedAuthId : null);
+
       try {
         setLoading(true);
         const { data } = await axiosInstance.get(`/api/students/${id}/`);
+
+        if (!Number.isFinite(parsedAuthId)) {
+          const fromApi = Number(data?.id ?? data?.student_id);
+          if (Number.isFinite(fromApi)) setAuthStudentId(fromApi);
+        }
 
         // Map API response to UI-friendly shape
         const mappedProfile = {
@@ -52,20 +80,78 @@ const StudentDashboard = () => {
           department: data.dept || data.program,
         };
 
-        const mappedOverall = {
-          percentage: data.overall_attendance,
-          status: data.overall_attendance >= 75 ? "Good" : "Below Average",
+        const toNumber = (value) => {
+          const n = Number(value);
+          return Number.isFinite(n) ? n : null;
         };
 
-        const mappedCourses = (data.courses || []).map((c) => ({
-          code: c.course_code || String(c.course_id),
-          name: c.course_name,
-          attendance: Math.round(
-            ((c.classes_attended_count || 0) / Math.max(c.classes_attended_count || 1, 1)) * 100
-          ),
-          present: c.classes_attended_count || 0,
-          total: c.classes_attended_count || 0,
-        }));
+        const mappedCourses = (data.courses || []).map((c) => {
+          const present =
+            toNumber(
+              c.classes_attended_count ??
+                c.present ??
+                c.attended ??
+                c.attended_count
+            ) ?? 0;
+
+          const missed =
+            toNumber(
+              c.classes_missed_count ??
+                c.absent ??
+                c.absent_count ??
+                c.classes_absent_count
+            ) ?? 0;
+
+          let total =
+            toNumber(
+              c.classes_total_count ??
+                c.total_classes_count ??
+                c.total_classes ??
+                c.classes_held_count ??
+                c.classes_count ??
+                c.total ??
+                c.session_count
+            ) ?? 0;
+
+          if (!total && (present || missed)) total = present + missed;
+
+          const attendance = total > 0 ? Math.round((present / total) * 100) : 0;
+
+          return {
+            code: c.course_code || String(c.course_id ?? c.course ?? ""),
+            name: c.course_name ?? c.name ?? "N/A",
+            attendance,
+            present,
+            total,
+          };
+        });
+
+        const overallFromApi = toNumber(data.overall_attendance);
+
+        const totals = mappedCourses.reduce(
+          (acc, c) => ({
+            present: acc.present + (Number(c.present) || 0),
+            total: acc.total + (Number(c.total) || 0),
+          }),
+          { present: 0, total: 0 }
+        );
+
+        const overallFromCourses =
+          totals.total > 0
+            ? Math.round((totals.present / totals.total) * 100)
+            : null;
+
+        const percentage =
+          overallFromApi == null
+            ? overallFromCourses ?? 0
+            : overallFromApi === 0 && overallFromCourses != null && overallFromCourses > 0
+              ? overallFromCourses
+              : overallFromApi;
+
+        const mappedOverall = {
+          percentage,
+          status: Number(percentage) >= 75 ? "Good" : "Below Average",
+        };
 
         setProfile(mappedProfile);
         setOverallAttendance(mappedOverall);
@@ -125,24 +211,69 @@ const StudentDashboard = () => {
     return () => stopScanner();
   }, [scannerOpen]);
 
-  const handleScanSuccess = (decodedText) => {
-    stopScanner();
+  const handleScanSuccess = async (decodedText) => {
+    if (scanInFlightRef.current) return;
+    scanInFlightRef.current = true;
+
+    await stopScanner();
+
+    let qrTokenCandidate = decodedText;
     try {
-      const qrData = JSON.parse(decodedText);
-
-      if (!courses.some((c) => c.code === qrData.course)) {
-        alert("You are not enrolled in this course.");
-        return;
-      }
-
-      console.log({
-        studentName: profile.name,
-        studentRollNo: profile.studentId,
-        ...qrData,
-        scannedAt: new Date().toISOString(),
-      });
+      const parsed = JSON.parse(decodedText);
+      qrTokenCandidate =
+        parsed?.qr_token ??
+        parsed?.qrToken ??
+        parsed?.token ??
+        parsed?.qr ??
+        decodedText;
     } catch {
-      alert("Invalid QR format.");
+      // If QR is not JSON, treat it as raw token.
+    }
+
+    const qrToken = String(qrTokenCandidate || "").trim();
+    if (!qrToken) {
+      alert("Invalid QR token.");
+      scanInFlightRef.current = false;
+      return;
+    }
+
+    if (!authStudentId) {
+      alert("Student session is missing an id. Please login again.");
+      scanInFlightRef.current = false;
+      return;
+    }
+
+    let location;
+    try {
+      location = await getCurrentLocation();
+    } catch {
+      alert("Location permission is required to mark attendance.");
+      scanInFlightRef.current = false;
+      return;
+    }
+
+    try {
+      const payload = {
+        qr_token: qrToken,
+        student_id: authStudentId,
+        latitude: location.lat,
+        longitude: location.lng,
+      };
+
+      const { data } = await axiosInstance.post("/api/attendance/qr-scan/", payload);
+
+      const msg = data?.message || "QR code scanned successfully";
+      if (data?.needs_rfid) {
+        alert(`${msg}\n\nRFID scan is still required.`);
+      } else {
+        alert(msg);
+      }
+    } catch (err) {
+      const result = err.response?.data;
+      const messages = result ? Object.values(result).flat().join(" ") : "Failed to scan QR code.";
+      alert(messages || "Failed to scan QR code.");
+    } finally {
+      scanInFlightRef.current = false;
     }
   };
 

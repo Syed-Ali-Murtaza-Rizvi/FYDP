@@ -41,7 +41,7 @@ const CourseTable = ({ courses }) => {
                     <div
                       className="progress-fill"
                       style={{
-                        width: `${(course.present / course.total) * 100}%`
+                        width: `${course.total > 0 ? (course.present / course.total) * 100 : 0}%`
                       }}
                     />
                   </div>

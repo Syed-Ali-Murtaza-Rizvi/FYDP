@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import teacherData from "../../data/TeacherData";
-import adminData from "../../data/AdminData";
 import "./login1.css";
 import "./SignUp";
 import loginImage from "../../assets/login_image1 .png";
@@ -81,28 +79,41 @@ const Login = () => {
        TEACHER LOGIN
     ========================= */
     if (data.role === "teacher") {
-      const teacher = teacherData.find(
-        (t) =>
-          t.profile.email === data.email &&
-          t.profile.password === data.password
-      );
+      try {
+        setLoading(true);
+        const { data: result } = await axios.post("/api/auth/login/teacher/", {
+          email: data.email,
+          password: data.password,
+        });
 
-      if (teacher) {
         localStorage.setItem(
           "currentUser",
           JSON.stringify({
             role: "teacher",
-            id: teacher.profile.teacherId,
-            name: teacher.profile.name,
-            email: teacher.profile.email,
+            id: result.teacher_id,
+            name: result.teacher_name,
+            token: result.access,
+            refresh: result.refresh,
+            user_type: result.user_type,
+            teacher_id: result.teacher_id,
+            teacherId: result.teacher_id,
+            teacher_name: result.teacher_name,
+            email: result.email,
           })
         );
 
         navigate("/teacher");
-        return;
+      } catch (err) {
+        const result = err.response?.data;
+        if (result) {
+          const messages = Object.values(result).flat().join(" ");
+          setError(messages || "Invalid credentials. Please try again.");
+        } else {
+          setError("Network error. Please check your connection and try again.");
+        }
+      } finally {
+        setLoading(false);
       }
-
-      alert("Invalid teacher credentials");
       return;
     }
 
