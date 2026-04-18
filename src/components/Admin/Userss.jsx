@@ -1,14 +1,46 @@
-import React from "react";
+import React, { useState } from "react";
 import orgAdminData from "../../data/OrgAdminData";
 
 const Users = () => {
-  const users = orgAdminData.users;
+  const [users, setUsers] = useState(orgAdminData.users);
+
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [viewModal, setViewModal] = useState(false);
+  const [editModal, setEditModal] = useState(false);
+
+  const [editData, setEditData] = useState({
+    role: "",
+    status: "",
+  });
+
+  // ✅ DELETE
+  const handleDelete = (id) => {
+    if (!window.confirm("Delete this user?")) return;
+
+    const updated = users.filter((u) => u.id !== id);
+    setUsers(updated);
+  };
+
+  // ✅ UPDATE
+  const handleUpdate = () => {
+    const updated = users.map((u) =>
+      u.id === selectedUser.id
+        ? {
+            ...u,
+            role: editData.role,
+            status: editData.status,
+          }
+        : u
+    );
+
+    setUsers(updated);
+    setEditModal(false);
+  };
 
   return (
     <div className="table-container">
       <div className="table-header">
         <h3>Current Users</h3>
-        {/* <button className="primary-btn">+ Add User</button> */}
       </div>
 
       <table>
@@ -33,28 +65,141 @@ const Users = () => {
               <td>{user.organization}</td>
               <td>{user.department}</td>
 
-              {/* STATUS BADGE */}
+              {/* STATUS */}
               <td>
-                <span
-                  className={
-                    user.status === "online"
-                      ? "status online"
-                      : "status offline"
-                  }
-                >
+                <span className={`status ${user.status}`}>
                   {user.status}
                 </span>
               </td>
 
-              {/* ACTION BUTTONS */}
-              <td>
-                <button>Update</button>
-                <button>Remove</button>
+              {/* ACTIONS */}
+              <td className="actions">
+                <button
+                  className="btn-view"
+                  onClick={() => {
+                    setSelectedUser(user);
+                    setViewModal(true);
+                  }}
+                >
+                  View
+                </button>
+
+                <button
+                  className="btn-edit"
+                  onClick={() => {
+                    setSelectedUser(user);
+                    setEditData({
+                      role: user.role,
+                      status: user.status,
+                    });
+                    setEditModal(true);
+                  }}
+                >
+                  Update
+                </button>
+
+                <button
+                  className="btn-delete"
+                  onClick={() => handleDelete(user.id)}
+                >
+                  Remove
+                </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      {/* ✅ VIEW MODAL */}
+      {viewModal && selectedUser && (
+        <div className="modal-overlay">
+          <div className="modal">
+
+            <div className="modal-header">
+              <h2>User Details</h2>
+              <button onClick={() => setViewModal(false)}>✕</button>
+            </div>
+
+            <div className="form-grid">
+              <input value={selectedUser.name} disabled />
+              <input value={selectedUser.email} disabled />
+              <input value={selectedUser.role} disabled />
+              <input value={selectedUser.organization} disabled />
+              <input value={selectedUser.department} disabled />
+              <input value={selectedUser.status} disabled />
+            </div>
+
+            <div className="modal-actions">
+              <button
+                className="btn-cancel"
+                onClick={() => setViewModal(false)}
+              >
+                Close
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* ✅ EDIT MODAL */}
+      {editModal && selectedUser && (
+        <div className="modal-overlay">
+          <div className="modal">
+
+            <div className="modal-header">
+              <h2>Update User</h2>
+              <button onClick={() => setEditModal(false)}>✕</button>
+            </div>
+
+            <div className="form-grid">
+              <input value={selectedUser.name} disabled />
+              <input value={selectedUser.email} disabled />
+
+              {/* ROLE */}
+              <select
+                value={editData.role}
+                onChange={(e) =>
+                  setEditData({ ...editData, role: e.target.value })
+                }
+              >
+                <option value="Admin">Admin</option>
+                <option value="Student">Student</option>
+                <option value="Teacher">Teacher</option>
+                <option value="Employee">Employee</option>
+              </select>
+
+              {/* STATUS */}
+              <select
+                value={editData.status}
+                onChange={(e) =>
+                  setEditData({ ...editData, status: e.target.value })
+                }
+              >
+                <option value="online">online</option>
+                <option value="offline">offline</option>
+              </select>
+            </div>
+
+            <div className="modal-actions">
+              <button
+                className="btn-cancel"
+                onClick={() => setEditModal(false)}
+              >
+                Cancel
+              </button>
+
+              <button
+                className="btn-create"
+                onClick={handleUpdate}
+              >
+                Update
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
     </div>
   );
 };

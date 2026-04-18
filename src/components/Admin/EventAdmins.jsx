@@ -7,12 +7,19 @@ const EventAdmins = () => {
   const [eventAdmins, setEventAdmins] = useState(initialData);
   const [showModal, setShowModal] = useState(false);
 
+  const [selectedAdmin, setSelectedAdmin] = useState(null);
+  const [viewModal, setViewModal] = useState(false);
+  const [editModal, setEditModal] = useState(false);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     organization: "",
   });
 
+   const [editData, setEditData] = useState({
+      status: "active",
+    });
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -38,6 +45,25 @@ const EventAdmins = () => {
       organization: "",
     });
   };
+   // ✅ DELETE
+ const handleDelete = (id) => {
+  const updated = eventAdmins.filter((a) => a.id !== id);
+  setEventAdmins(updated); 
+};
+  // ✅ UPDATE
+  const handleUpdate = () => {
+  const updatedAdmins = eventAdmins.map((a) =>
+    a.id === selectedAdmin.id
+      ? {
+          ...a,
+          status: editData.status,
+        }
+      : a
+  );
+
+  setEventAdmins(updatedAdmins); 
+  setEditModal(false);
+};
 
   return (
     <div className="table-container">
@@ -54,7 +80,7 @@ const EventAdmins = () => {
       <table>
         <thead>
           <tr>
-            <th>Name</th>
+            <th>Organization Name</th>
             <th>Email</th>
             <th>Organization</th>
             <th>Events Managed</th>
@@ -87,15 +113,116 @@ const EventAdmins = () => {
                 </span>
               </td>
               <td>{admin.joinDate}</td>
-              <td>
-                <button>View</button>
-                <button>Edit</button>
-                <button>Delete</button>
-              </td>
+             <td className="actions">
+  <button
+    className="btn-view"
+    onClick={() => {
+      setSelectedAdmin(admin);
+      setViewModal(true);
+    }}
+  >
+    View
+  </button>
+
+  <button
+    className="btn-edit"
+    onClick={() => {
+      setSelectedAdmin(admin);
+      setEditData({ status: admin.status });
+      setEditModal(true);
+    }}
+  >
+    Edit
+  </button>
+
+  <button
+    className="btn-delete"
+    onClick={() => handleDelete(admin.id)}
+  >
+    Delete
+  </button>
+</td>
             </tr>
           ))}
         </tbody>
       </table>
+       {viewModal && selectedAdmin && (
+  <div className="modal-overlay">
+    <div className="modal">
+
+      {/* Header */}
+      <div className="modal-header">
+       <h1>Event Admin Details</h1>
+        <button onClick={() => setViewModal(false)}>✕</button>
+      </div>
+
+      {/* Grid Layout */}
+      <div className="form-grid">
+
+        <input value={selectedAdmin.name} disabled />
+        <input value={selectedAdmin.email} disabled />
+          <input value={selectedAdmin.organization} disabled />
+          <input value={selectedAdmin.eventsManaged} disabled />
+          <input value={selectedAdmin.activeEvents} disabled />
+        <input value={selectedAdmin.status} disabled />
+
+      </div>
+
+      {/* Footer */}
+      <div className="modal-actions">
+        <button className="btn-cancel" onClick={() => setViewModal(false)}>
+          Close
+        </button>
+      </div>
+
+    </div>
+  </div>
+)}
+
+      {/* ✅ EDIT MODAL */}
+     {editModal && selectedAdmin && (
+  <div className="modal-overlay">
+    <div className="modal">
+
+      {/* Header */}
+      <div className="modal-header">
+        <h2>Edit Admin</h2>
+        <button onClick={() => setEditModal(false)}>✕</button>
+      </div>
+
+      {/* Grid */}
+      <div className="form-grid">
+
+        <input value={selectedAdmin.name} disabled />
+        <input value={selectedAdmin.email} disabled />
+
+      
+
+        <select
+          value={editData.status}
+          onChange={(e) =>
+            setEditData({ ...editData, status: e.target.value })
+          }
+        >
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+
+      </div>
+
+      {/* Actions */}
+      <div className="modal-actions">
+        <button className="btn-cancel" onClick={() => setEditModal(false)}>
+          Cancel
+        </button>
+        <button className="btn-create" onClick={handleUpdate}>
+          Update
+        </button>
+      </div>
+
+    </div>
+  </div>
+)}
 
       {/* MODAL */}
       {showModal && (

@@ -11,44 +11,36 @@ const orgAdminData = {
     pendingMeetings: 2
   },
 
-  admins: [
-    {
-      id: 1,
-      name: "Dr. Rajesh Kumar",
-      email: "rajesh@university.edu",
-      organization: "ABC University",
-      department: "Computer Science",
-      status: "active",
-      joinDate: "2023-01-15"
-    },
-    {
-      id: 2,
-      name: "Prof. Anita Sharma",
-      email: "anita@university.edu",
-      organization: "ABC University",
-      department: "Electronics",
-      status: "active",
-      joinDate: "2023-03-20"
-    },
-    {
-      id: 3,
-      name: "Dr. Vijay Patel",
-      email: "vijay@college.edu",
-      organization: "XYZ College",
-      department: "Mechanical",
-      status: "active",
-      joinDate: "2023-06-10"
-    },
-    {
-      id: 4,
-      name: "Prof. Neha Verma",
-      email: "neha@university.edu",
-      organization: "ABC University",
-      department: "Civil",
-      status: "inactive",
-      joinDate: "2022-11-05"
-    }
-  ],
+admins: [
+  {
+    id: 1,
+    name: "ABC University",
+    email: "admin@abc.edu",
+    rfid: ["RF1001", "RF1002", "RF1003", "RF1004"],
+    status: "active"
+  },
+  {
+    id: 2,
+    name: "XYZ College",
+    email: "admin@xyz.edu",
+    rfid: ["RF2001", "RF2002"],
+    status: "active"
+  },
+  {
+    id: 3,
+    name: "Global Institute",
+    email: "admin@global.edu",
+    rfid: ["RF3001", "RF3002", "RF3003"],
+    status: "inactive"
+  },
+  {
+    id: 4,
+    name: "Tech University",
+    email: "admin@tech.edu",
+    rfid: ["RF4001", "RF4002", "RF4003", "RF4004", "RF4005"],
+    status: "active"
+  }
+],
 
   eventAdmins: [
     {
@@ -86,7 +78,7 @@ const orgAdminData = {
   meetings: [
     {
       id: 1,
-      requester: "Dr. Rajesh Kumar",
+      email: "rajesh@university.edu",
       role: "Admin",
       purpose: "Budget Discussion",
        organization: "ABC University",
@@ -97,7 +89,7 @@ const orgAdminData = {
     },
     {
       id: 2,
-      requester: "Prof. Anita Sharma",
+      email: "anita@university.edu",
       role: "Admin",
       purpose: "New Course Approval",
       organization: "ABC University",
@@ -108,7 +100,7 @@ const orgAdminData = {
     },
     {
       id: 3,
-      requester: "Prof. Vijay Patel",
+      email: "vijay@university.edu",
       role: "Teacher",
       purpose: "Equipment Request",
       organization: "ABC University",
@@ -119,30 +111,44 @@ const orgAdminData = {
     }
   ],
 
-  payments: [
-    {
-      id: 1,
-      student: "Rahul Sharma",
-      roll: "2023001",
-      organization:"ABC University",
-      type: "Tuition Fee",
-      amount: 25000,
-      dueDate: "2024-01-30",
-      status: "On time",
-      semester:"Spring 2024",
-    },
-    {
-      id: 2,
-      student: "Priya Patel",
-      roll: "2023002",
-       organization:"XYZ University",
-      type: "Lab Fee",
-      amount: 5000,
-      dueDate: "2024-01-20",
-      status: "6 days overdue",
-       semester:"Spring 2024",
-    }
-  ],
+ payments: [
+  {
+    id: 1,
+    organization: "ABC University",
+    email: "finance@abc.edu",
+    role: "Admin",
+    amount: 25000,
+    dueDate: "2024-01-30",
+    status: "Paid",
+  },
+  {
+    id: 2,
+    organization: "XYZ University",
+    email: "accounts@xyz.edu",
+    role: "Manager",
+    amount: 5000,
+    dueDate: "2024-01-20",
+    status: "Overdue",
+  },
+  {
+    id: 3,
+    organization: "Global Institute",
+    email: "billing@global.edu",
+    role: "Coordinator",
+    amount: 12000,
+    dueDate: "2024-02-05",
+    status: "Pending",
+  },
+  {
+    id: 4,
+    organization: "Tech College",
+    email: "admin@techcollege.edu",
+    role: "Admin",
+    amount: 18000,
+    dueDate: "2024-01-25",
+    status: "Paid",
+  }
+],
 
   users: [
     {
