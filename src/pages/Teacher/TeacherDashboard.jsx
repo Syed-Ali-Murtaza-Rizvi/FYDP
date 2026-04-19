@@ -216,11 +216,29 @@ const TeacherDashboard = () => {
         radius_meters: 50,
       };
 
-      const { data } = await axiosInstance.post("/api/attendance-sessions/generate-qr/", payload);
+      // 1) Create attendance session
+      const { data: created } = await axiosInstance.post("/api/attendance-sessions/", payload);
 
-      setQrCodeImage(data.qr_code || "");
-      setQrToken(data.qr_token || "");
-      setActiveSession(data.session || null);
+      const createdSession = created?.session ?? created ?? null;
+      const sessionId =
+        createdSession?.id ??
+        created?.session_id ??
+        created?.id ??
+        null;
+
+      if (!sessionId) {
+        setQrApiError("Attendance session was created but no session id was returned.");
+        return;
+      }
+
+      // 2) Fetch QR image + token for display
+      const { data: qrData } = await axiosInstance.get(
+        `/api/attendance-sessions/${sessionId}/qr/`
+      );
+
+      setQrCodeImage(qrData?.qr_code || "");
+      setQrToken(qrData?.qr_token || createdSession?.qr_code_token || "");
+      setActiveSession({ ...createdSession, id: Number(sessionId) || sessionId });
       setState("active");
     } catch (err) {
       const result = err.response?.data;

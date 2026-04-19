@@ -19,7 +19,7 @@ const RootRedirect = () => {
         } catch (e) {}
     }, []);
 
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/home" replace />;
 }
 
 const router = createBrowserRouter([

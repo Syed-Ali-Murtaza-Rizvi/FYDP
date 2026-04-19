@@ -2,13 +2,7 @@ import React from "react";
 import { User } from "lucide-react";
 
 const ProfileCard = ({ profile, onScanClick }) => {
-  // 1️⃣ Read from localStorage
-
-  const storedUser = localStorage.getItem("currentUser");
-console.log("ProfileCard storedUser data:", storedUser);
-  // 2️⃣ Parse safely
-  const user = storedUser ? JSON.parse(storedUser) : null;
-  // 3️⃣ Safety check (VERY IMPORTANT)
+  // Safety check
   if (!profile) {
     return <p>Loading profile...</p>;
   }
@@ -26,10 +20,12 @@ console.log("ProfileCard storedUser data:", storedUser);
         </h2>
 
         <ul className="profile-list">
-          <li>Student ID: {profile.studentId}</li>
+          {profile.rollNo ? <li>Roll No: {profile.rollNo}</li> : null}
+          {profile.studentId != null ? <li>Student ID: {profile.studentId}</li> : null}
+          {profile.email ? <li>Email: {profile.email}</li> : null}
           <li>Year: {profile.year}</li>
           <li>Section: {profile.section}</li>
-          <li>Department: {profile.department}</li>
+          <li>Department: {profile.dept || profile.program}</li>
         </ul>
 
         {typeof onScanClick === "function" && (

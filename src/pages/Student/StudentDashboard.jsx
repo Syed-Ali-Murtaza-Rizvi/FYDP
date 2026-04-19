@@ -72,12 +72,15 @@ const StudentDashboard = () => {
 
         // Map API response to UI-friendly shape
         const mappedProfile = {
-          name: data.student_name,
-          email: data.email,
-          studentId: data.student_id || data.student_rollNo,
-          year: data.year,
-          section: data.section,
-          department: data.dept || data.program,
+          name: data?.student_name,
+          email: data?.email,
+          studentId: data?.student_id,
+          rollNo: data?.student_rollNo,
+          year: data?.year,
+          dept: data?.dept,
+          program: data?.program,
+          section: data?.section,
+          management: data?.management,
         };
 
         const toNumber = (value) => {
@@ -102,20 +105,25 @@ const StudentDashboard = () => {
                 c.classes_absent_count
             ) ?? 0;
 
+          const explicitTotal = toNumber(c.classes_taken_count);
+
           let total =
-            toNumber(
-              c.classes_total_count ??
-                c.total_classes_count ??
-                c.total_classes ??
-                c.classes_held_count ??
-                c.classes_count ??
-                c.total ??
-                c.session_count
-            ) ?? 0;
+            explicitTotal != null
+              ? explicitTotal
+              : toNumber(
+                    c.classes_total_count ??
+                      c.total_classes_count ??
+                      c.total_classes ??
+                      c.classes_held_count ??
+                      c.classes_count ??
+                      c.total ??
+                      c.session_count
+                ) ?? 0;
 
-          if (!total && (present || missed)) total = present + missed;
+          if (explicitTotal == null && !total && missed) total = present + missed;
 
-          const attendance = total > 0 ? Math.round((present / total) * 100) : 0;
+          const computed = total > 0 ? Math.round((present / total) * 100) : 0;
+          const attendance = Math.min(Math.max(computed, 0), 100);
 
           return {
             code: c.course_code || String(c.course_id ?? c.course ?? ""),
@@ -156,7 +164,7 @@ const StudentDashboard = () => {
         setProfile(mappedProfile);
         setOverallAttendance(mappedOverall);
         setCourses(mappedCourses);
-      } catch (err) {
+      } catch {
         setError("Failed to load profile. Please login again.");
         localStorage.removeItem("currentUser");
         navigate("/login");
@@ -174,7 +182,9 @@ const StudentDashboard = () => {
     try {
       await html5QrCodeRef.current.stop();
       await html5QrCodeRef.current.clear();
-    } catch {}
+    } catch (_e) {
+      void _e;
+    }
     html5QrCodeRef.current = null;
     setScannerOpen(false);
   };
@@ -278,6 +288,7 @@ const StudentDashboard = () => {
   };
 
   if (loading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
   if (!profile) return null;
 
   return (
